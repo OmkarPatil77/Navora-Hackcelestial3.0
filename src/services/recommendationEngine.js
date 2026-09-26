@@ -140,8 +140,17 @@ export function scoreExperience(experience, preferences, journeyMemory = null) {
  * Returns ranked recommendations for the given preferences and optional active filters.
  */
 export function getRecommendations(preferences, filters = {}, journeyMemory = null) {
+  const isMixed = Boolean(filters.mixedPlaces || filters.destination === "All")
   const destName = preferences?.destination?.city || preferences?.destination?.name || "Goa"
-  const rawExperiences = getExperiencesByDestination(destName)
+
+  let rawExperiences = []
+  if (isMixed) {
+    rawExperiences = allExperiences
+  } else if (filters.destination && filters.destination !== "All") {
+    rawExperiences = getExperiencesByDestination(filters.destination)
+  } else {
+    rawExperiences = getExperiencesByDestination(destName)
+  }
 
   let candidates = rawExperiences.map(exp => scoreExperience(exp, preferences, journeyMemory))
 
@@ -187,8 +196,12 @@ export function getRecommendations(preferences, filters = {}, journeyMemory = nu
 
   return {
     isSupportedDestination: true,
-    destinationName: preferences?.destination?.name || preferences?.destination?.city || "Goa, India",
-    experiences: candidates
+    isMixed,
+    destinationName: isMixed 
+      ? "Mixed Destinations" 
+      : (filters.destination || preferences?.destination?.name || preferences?.destination?.city || "Goa, India"),
+    experiences: candidates,
+    totalAvailable: rawExperiences.length
   }
 }
 

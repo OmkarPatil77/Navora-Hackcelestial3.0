@@ -1,7 +1,7 @@
 import React, { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { motion } from 'framer-motion'
-import { Play, ArrowRight, Compass, Clock, CheckCircle2, ShieldCheck, Heart } from 'lucide-react'
+import { Play, ArrowRight, ShieldCheck, Heart } from 'lucide-react'
 import { LiveAdaptationModal } from './LiveAdaptationModal'
 
 export const HeroSection = () => {
@@ -201,66 +201,6 @@ export const HeroSection = () => {
               <div className="absolute inset-0 bg-gradient-to-t from-navy-950/20 via-transparent to-transparent pointer-events-none" />
             </div>
 
-            {/* Floating Card 1: Destination & Active Trip Stamp (Top-Left) */}
-            <motion.div
-              initial={{ opacity: 0, x: -20 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ duration: 0.6, delay: 0.35 }}
-              whileHover={{ y: -3 }}
-              className="absolute -top-3 -left-3 sm:-left-6 max-w-[210px] bg-white/95 backdrop-blur-md border border-sand-200 rounded-2xl p-3 shadow-soft-lg z-20"
-            >
-              <div className="flex items-center gap-2.5">
-                <div className="w-9 h-9 rounded-xl bg-amber-50 border border-amber-200 flex items-center justify-center text-amber-700 shrink-0 font-bold text-xs">
-                  GOA
-                </div>
-                <div>
-                  <p className="text-[11px] font-bold text-navy-900 leading-tight">Panjim & Coastal</p>
-                  <p className="text-[10px] text-muted-foreground flex items-center gap-1 mt-0.5">
-                    <span>☀️ 29°C</span>
-                    <span>•</span>
-                    <span className="text-emerald-700 font-semibold">Day 1 Active</span>
-                  </p>
-                </div>
-              </div>
-            </motion.div>
-
-            {/* Floating Card 2: Live Concierge (Bottom-Left Metaphor) */}
-            <motion.div
-              initial={{ opacity: 0, y: 25 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6, delay: 0.5 }}
-              whileHover={{ y: -3 }}
-              className="absolute -bottom-6 -left-3 sm:-left-8 max-w-[310px] sm:max-w-[330px] rounded-2xl bg-white/95 backdrop-blur-md border border-sand-200/90 p-4 shadow-soft-xl z-20"
-            >
-              <div className="flex items-center justify-between pb-2 border-b border-sand-100">
-                <div className="flex items-center gap-1.5 text-xs font-bold text-navy-900">
-                  <Compass className="w-3.5 h-3.5 text-coral-500" />
-                  <span>Live Trip Concierge</span>
-                </div>
-                <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800 border border-emerald-200 flex items-center gap-1">
-                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
-                  Active Sync
-                </span>
-              </div>
-              
-              <div className="mt-2.5 space-y-2">
-                <div className="flex items-start gap-2 text-xs">
-                  <Clock className="w-3.5 h-3.5 text-amber-600 shrink-0 mt-0.5" />
-                  <div>
-                    <p className="font-semibold text-navy-900 text-[11px]">Flight 6E-204 delayed 2h 15m</p>
-                    <p className="text-[10px] text-muted-foreground">Airport pickup driver rescheduled automatically</p>
-                  </div>
-                </div>
-
-                <div className="flex items-start gap-2 text-xs pt-1 border-t border-sand-50">
-                  <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600 shrink-0 mt-0.5" />
-                  <div>
-                    <p className="font-semibold text-navy-900 text-[11px]">Sunset Cruise swapped to Day 2</p>
-                    <p className="text-[10px] text-emerald-700 font-medium">Zero penalty • Dinner table preserved</p>
-                  </div>
-                </div>
-              </div>
-            </motion.div>
 
             {/* Floating Card 3: Social Proof / Community Counter (Bottom-Right) */}
             <motion.div

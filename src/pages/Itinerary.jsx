@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom'
 import { motion, AnimatePresence } from 'framer-motion'
 import { 
   Calendar, MapPin, Clock, AlertTriangle, Sparkles, 
-  CheckCircle2, Compass, Sun, Wallet, Users, ArrowRight, 
+  CheckCircle2, Check, Compass, Sun, Wallet, Users, ArrowRight, 
   ShieldCheck, Edit3, RefreshCw, Plus, Layers, Zap, HeartHandshake, Shield 
 } from 'lucide-react'
 import { useTripPlan } from '@/context/TripPlanningContext'
@@ -27,7 +27,10 @@ export const Itinerary = () => {
     regenerateSingleDay,
     regenerateFullItinerary,
     updateItineraryItemTime,
-    removeItineraryItem
+    removeItineraryItem,
+    isTripBooked,
+    bookTrip,
+    cancelBooking
   } = useTripPlan()
 
   const [selectedDayNumber, setSelectedDayNumber] = useState(1)
@@ -133,6 +136,25 @@ export const Itinerary = () => {
                 92%
               </span>
             </div>
+
+            {isTripBooked ? (
+              <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-emerald-50 border border-emerald-300 text-emerald-800 text-xs font-bold shadow-soft-xs">
+                <CheckCircle2 className="w-4 h-4 text-emerald-600" />
+                <span>Trip Confirmed & Booked</span>
+              </div>
+            ) : (
+              <Button
+                size="sm"
+                onClick={() => {
+                  bookTrip()
+                  setActiveAssistantNotice(`🎉 Trip to ${destination.city || destination.name} successfully booked! Your Explore section is now synchronized with this destination.`)
+                }}
+                className="bg-emerald-600 hover:bg-emerald-700 text-white text-xs shadow-soft-xs font-semibold"
+                leftIcon={<Check className="w-3.5 h-3.5" />}
+              >
+                Confirm & Book Trip
+              </Button>
+            )}
 
             <Button
               size="sm"

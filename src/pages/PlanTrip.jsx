@@ -27,7 +27,8 @@ export const PlanTrip = () => {
     setInterests,
     setTravelStyle,
     setBudget,
-    resetPreferences
+    resetPreferences,
+    bookTrip
   } = useTripPlan()
 
   const [currentStep, setCurrentStep] = useState(1)
@@ -93,6 +94,7 @@ export const PlanTrip = () => {
     setIsGenerating(true)
     setTimeout(() => {
       setIsGenerating(false)
+      bookTrip()
       navigate('/recommendations')
     }, 1000)
   }

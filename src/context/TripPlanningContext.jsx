@@ -20,10 +20,30 @@ const ITINERARY_KEY = 'tripsaathi_itinerary'
 const DISRUPTION_KEY = 'tripsaathi_active_disruption'
 const RECOVERY_LOG_KEY = 'tripsaathi_event_log'
 const OPERATOR_STATE_KEY = 'tripsaathi_operator_state'
+const IS_BOOKED_KEY = 'tripsaathi_is_trip_booked'
+const BOOKED_TRIP_KEY = 'tripsaathi_booked_trip'
 
 const TripPlanningContext = createContext(null)
 
 export const TripPlanningProvider = ({ children }) => {
+  // Booking state: false by default for new explorations, persisted once confirmed
+  const [isTripBooked, setIsTripBooked] = useState(() => {
+    try {
+      const saved = localStorage.getItem(IS_BOOKED_KEY)
+      return saved === 'true'
+    } catch {
+      return false
+    }
+  })
+
+  const [bookedTrip, setBookedTrip] = useState(() => {
+    try {
+      const saved = localStorage.getItem(BOOKED_TRIP_KEY)
+      return saved ? JSON.parse(saved) : null
+    } catch {
+      return null
+    }
+  })
   const [tripPreferences, setTripPreferences] = useState(() => {
     try {
       const saved = localStorage.getItem(STORAGE_KEY)
@@ -728,10 +748,45 @@ export const TripPlanningProvider = ({ children }) => {
   const resetPreferences = () => {
     setTripPreferences(defaultTripPreferences)
     resetDisruptionSimulation()
+    cancelBooking()
     try {
       localStorage.setItem(STORAGE_KEY, JSON.stringify(defaultTripPreferences))
     } catch (e) {
       console.warn("Could not reset localStorage", e)
+    }
+  }
+
+  // Trip Booking helpers
+  const bookTrip = (customTrip = null) => {
+    const bookingDetails = customTrip || {
+      id: `TS-${Date.now().toString().slice(-4)}`,
+      destination: tripPreferences.destination,
+      dates: { startDate: tripPreferences.startDate, endDate: tripPreferences.endDate },
+      duration: tripPreferences.duration,
+      travelers: tripPreferences.travelers,
+      budget: tripPreferences.budget,
+      selectedExperiences,
+      bookedAt: new Date().toISOString()
+    }
+    setIsTripBooked(true)
+    setBookedTrip(bookingDetails)
+    try {
+      localStorage.setItem(IS_BOOKED_KEY, 'true')
+      localStorage.setItem(BOOKED_TRIP_KEY, JSON.stringify(bookingDetails))
+    } catch (e) {
+      console.warn("Could not save booking to localStorage", e)
+    }
+    return bookingDetails
+  }
+
+  const cancelBooking = () => {
+    setIsTripBooked(false)
+    setBookedTrip(null)
+    try {
+      localStorage.removeItem(IS_BOOKED_KEY)
+      localStorage.removeItem(BOOKED_TRIP_KEY)
+    } catch (e) {
+      console.warn("Could not remove booking from localStorage", e)
     }
   }
 
@@ -740,6 +795,11 @@ export const TripPlanningProvider = ({ children }) => {
   const remainingBudget = Math.max(0, (tripPreferences.budget?.total || 35000) - totalPlannedActivitiesCost)
 
   const value = {
+    isTripBooked,
+    setIsTripBooked,
+    bookedTrip,
+    bookTrip,
+    cancelBooking,
     tripPreferences,
     selectedExperiences,
     itinerary,

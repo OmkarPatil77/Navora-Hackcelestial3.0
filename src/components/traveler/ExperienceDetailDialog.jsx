@@ -14,7 +14,8 @@ export const ExperienceDetailDialog = ({
   onClose,
   isSelected,
   onToggleSelect,
-  adultCount = 2
+  adultCount = 2,
+  isTripBooked = true
 }) => {
   if (!experience) return null
 
@@ -145,19 +146,33 @@ export const ExperienceDetailDialog = ({
         {/* Footer Actions */}
         <div className="p-4 bg-sand-50/90 border-t border-sand-200 flex items-center justify-between gap-3">
           <Button variant="outline" size="sm" onClick={onClose}>
-            Maybe Later
+            Close
           </Button>
 
-          <Button
-            onClick={() => {
-              onToggleSelect(experience)
-              onClose()
-            }}
-            className={isSelected ? "bg-emerald-700 hover:bg-emerald-800 text-white" : "bg-terracotta-600 hover:bg-terracotta-700 text-white"}
-            leftIcon={isSelected ? <Check className="w-4 h-4" /> : <Plus className="w-4 h-4" />}
-          >
-            {isSelected ? "Remove from Journey" : "Add to My Journey"}
-          </Button>
+          {isTripBooked ? (
+            <Button
+              onClick={() => {
+                onToggleSelect(experience)
+                onClose()
+              }}
+              className={isSelected ? "bg-emerald-700 hover:bg-emerald-800 text-white" : "bg-terracotta-600 hover:bg-terracotta-700 text-white"}
+              leftIcon={isSelected ? <Check className="w-4 h-4" /> : <Plus className="w-4 h-4" />}
+            >
+              {isSelected ? "Remove from Journey" : "Add to My Journey"}
+            </Button>
+          ) : (
+            <div className="flex items-center gap-2">
+              <span className="text-[11px] text-amber-700 font-semibold hidden sm:inline">
+                🔒 Trip booking required
+              </span>
+              <Button
+                disabled
+                className="bg-sand-200 text-charcoal-400 cursor-not-allowed opacity-70 text-xs font-semibold"
+              >
+                Add to Trip (Disabled)
+              </Button>
+            </div>
+          )}
         </div>
 
       </DialogContent>
