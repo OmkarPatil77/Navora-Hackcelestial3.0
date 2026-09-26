@@ -1,4 +1,349 @@
-import { goaExperiences } from '@/data/experiences'
+import { goaExperiences, getExperiencesByDestination, allExperiences } from '@/data/experiences'
+
+/**
+ * Destination-specific logistical, hospitality, and culinary profiles
+ */
+export const destinationProfiles = {
+  goa: {
+    city: "Goa",
+    airportCode: "GOI",
+    airportLocation: "Dabolim International Terminal (GOI)",
+    airportCoord: { lat: 15.38, lng: 73.83 },
+    flightInbound: "Inbound Flight: Mumbai (BOM) → Goa (GOI)",
+    flightOutbound: "Outbound Flight: Goa (GOI) → Mumbai (BOM)",
+    flightDuration: 75,
+    flightCost: 4200,
+    hotel: {
+      name: "Heritage Boutique Villa & Resort",
+      location: "Panjim Riverside / Candolim",
+      coordinates: { lat: 15.501, lng: 73.815 }
+    },
+    welcomeLunch: {
+      title: "Welcome Traditional Goan Fish Thali & Kokum Kadhi",
+      location: "Panjim Heritage Bistro",
+      cost: 650,
+      coordinates: { lat: 15.498, lng: 73.827 }
+    },
+    sunsetDinner: {
+      title: "Riverside Candlelight Dinner",
+      location: "Viva Panjim / Waterfront Bistro",
+      cost: 900,
+      coordinates: { lat: 15.498, lng: 73.827 }
+    },
+    villaBreakfast: {
+      title: "Tropical Villa Breakfast with Fresh Poi Bread",
+      cost: 350
+    },
+    midLunch: {
+      title: "Artisan Coastal Shack Lunch & Tender Coconut",
+      location: "Beachside Shacks / Garden Bistro",
+      cost: 600
+    },
+    midDinner: {
+      title: "Chef's Curated Goan Balchão & Seafood Dinner",
+      location: "Cliffside / Latin Quarter",
+      cost: 850
+    },
+    farewellLunch: {
+      title: "Coastal Farewell Seafood Lunch",
+      location: "Panjim Waterfront Bistro",
+      cost: 700
+    },
+    tripIdPrefix: "TS-GOA",
+    dayTitles: [
+      { title: "Arrival & Latin Quarter Sunset", theme: "Arrival" },
+      { title: "Coastal Waters, Scuba & Coves", theme: "Adventure" },
+      { title: "Culture, Spice & River Trails", theme: "Culture" },
+      { title: "Scenic South Goa Coves & Serenity", theme: "Leisure" },
+      { title: "Heritage Souvenirs & Departure", theme: "Departure" }
+    ]
+  },
+  jaipur: {
+    city: "Jaipur",
+    airportCode: "JAI",
+    airportLocation: "Jaipur International Airport (JAI Terminal 2)",
+    airportCoord: { lat: 26.828, lng: 75.805 },
+    flightInbound: "Inbound Flight: Delhi (DEL) → Jaipur (JAI)",
+    flightOutbound: "Outbound Flight: Jaipur (JAI) → Delhi (DEL)",
+    flightDuration: 60,
+    flightCost: 3800,
+    hotel: {
+      name: "Royal Heritage Haveli & Palace Suites",
+      location: "Civil Lines / Bani Park, Jaipur",
+      coordinates: { lat: 26.924, lng: 75.787 }
+    },
+    welcomeLunch: {
+      title: "Royal Rajasthani Thali & Dal Baati Churma",
+      location: "LMB (Laxmi Mishthan Bhandar), Johari Bazaar",
+      cost: 750,
+      coordinates: { lat: 26.920, lng: 75.824 }
+    },
+    sunsetDinner: {
+      title: "Nahargarh Fort View Rooftop Candlelight Dinner",
+      location: "Peacock Rooftop / Padao Amber",
+      cost: 950,
+      coordinates: { lat: 26.936, lng: 75.816 }
+    },
+    villaBreakfast: {
+      title: "Haveli Courtyard Breakfast with Pyaaz Kachori & Masala Chai",
+      cost: 380
+    },
+    midLunch: {
+      title: "Artisan Spice Lunch & Gatte Ki Sabzi",
+      location: "1135 AD Amber Courtyard",
+      cost: 700
+    },
+    midDinner: {
+      title: "Regal Rajputana Dinner with Live Sarangi Music",
+      location: "Chokhi Dhani Heritage Courtyard",
+      cost: 1100
+    },
+    farewellLunch: {
+      title: "Pink City Farewell Thali Lunch",
+      location: "Handi Restaurant, MI Road",
+      cost: 750
+    },
+    tripIdPrefix: "TS-JAI",
+    dayTitles: [
+      { title: "Pink City Arrival & Old Bazaar Sunset", theme: "Arrival" },
+      { title: "Grand Hillforts & Amer Palace Grandeur", theme: "Heritage" },
+      { title: "Royal Architecture & Artisan Textile Trails", theme: "Culture" },
+      { title: "Stepwells, Observatories & Craft Villages", theme: "Exploration" },
+      { title: "Bazaar Souvenirs & Royal Departure", theme: "Departure" }
+    ]
+  },
+  kerala: {
+    city: "Kerala",
+    airportCode: "COK",
+    airportLocation: "Cochin International Airport (COK)",
+    airportCoord: { lat: 10.155, lng: 76.391 },
+    flightInbound: "Inbound Flight: Bangalore (BLR) → Kochi (COK)",
+    flightOutbound: "Outbound Flight: Kochi (COK) → Bangalore (BLR)",
+    flightDuration: 70,
+    flightCost: 4400,
+    hotel: {
+      name: "Emerald Lake Ayurvedic & Backwater Villa",
+      location: "Kumarakom / Alleppey Backwaters",
+      coordinates: { lat: 9.617, lng: 76.430 }
+    },
+    welcomeLunch: {
+      title: "Traditional Kerala Sadya on Fresh Banana Leaf",
+      location: "Grand Pavilion / Backwater Bistro",
+      cost: 600,
+      coordinates: { lat: 9.615, lng: 76.432 }
+    },
+    sunsetDinner: {
+      title: "Karimeen Pollichathu & Appam Dinner by the Water",
+      location: "Kumarakom Waterfront Lounge",
+      cost: 950,
+      coordinates: { lat: 9.618, lng: 76.428 }
+    },
+    villaBreakfast: {
+      title: "Steaming Appam, Veg Stew & Fresh Coconut Water",
+      cost: 320
+    },
+    midLunch: {
+      title: "Backwater Toddy-Shop Spiced Catch Lunch",
+      location: "Alleppey Canal Bistro",
+      cost: 650
+    },
+    midDinner: {
+      title: "Houseboat Candlelight Dinner Under Starlit Palm Canals",
+      location: "Vembanad Lake Waters",
+      cost: 1000
+    },
+    farewellLunch: {
+      title: "Malabar Spice Coastal Farewell Lunch",
+      location: "Fort Kochi Heritage Cafe",
+      cost: 700
+    },
+    tripIdPrefix: "TS-KER",
+    dayTitles: [
+      { title: "Cochin Arrival & Scenic Backwater Check-in", theme: "Arrival" },
+      { title: "Tranquil Houseboat Cruise & Lagoon Waters", theme: "Nature" },
+      { title: "Munnar Misty Tea Plantations & Spice Hills", theme: "Exploration" },
+      { title: "Ayurvedic Wellness & Village Canoeing", theme: "Wellness" },
+      { title: "Spice Treasures & Scenic Departure", theme: "Departure" }
+    ]
+  },
+  dubai: {
+    city: "Dubai",
+    airportCode: "DXB",
+    airportLocation: "Dubai International Airport (DXB Terminal 3)",
+    airportCoord: { lat: 25.253, lng: 55.365 },
+    flightInbound: "Inbound Flight: Mumbai (BOM) → Dubai (DXB)",
+    flightOutbound: "Outbound Flight: Dubai (DXB) → Mumbai (BOM)",
+    flightDuration: 200,
+    flightCost: 12500,
+    hotel: {
+      name: "The Address Downtown & Luxury Marina Suites",
+      location: "Downtown Dubai / Marina Boulevard",
+      coordinates: { lat: 25.195, lng: 55.278 }
+    },
+    welcomeLunch: {
+      title: "Emirati Mezze & Mediterranean Grilled Catch Lunch",
+      location: "Al Fanar Waterfront Bistro",
+      cost: 1400,
+      coordinates: { lat: 25.223, lng: 55.270 }
+    },
+    sunsetDinner: {
+      title: "Dubai Marina Promenade Skyline Dinner",
+      location: "Pier 7 / Marina Promenade",
+      cost: 2200,
+      coordinates: { lat: 25.078, lng: 55.139 }
+    },
+    villaBreakfast: {
+      title: "Skyline Terrace Continental & Arabic Breakfast Buffet",
+      cost: 650
+    },
+    midLunch: {
+      title: "Downtown Gourmet Lunch with Burj Khalifa Views",
+      location: "Souk Al Bahar Waterfront",
+      cost: 1600
+    },
+    midDinner: {
+      title: "Bedouin Desert Camp Starlit BBQ Banquet",
+      location: "Lahbab Red Dunes Bedouin Camp",
+      cost: 1800
+    },
+    farewellLunch: {
+      title: "Gourmet Farewell Mezze & Shawarma Feast",
+      location: "Dubai Mall Waterfront Promenade",
+      cost: 1500
+    },
+    tripIdPrefix: "TS-DXB",
+    dayTitles: [
+      { title: "Arrival & Soaring Downtown Skylines", theme: "Arrival" },
+      { title: "Red Dune Desert Safari & Arabian Nights", theme: "Adventure" },
+      { title: "Futuristic Marvels & Marina Yacht Sailing", theme: "Luxury" },
+      { title: "Heritage Al Fahidi & Souk Exploration", theme: "Culture" },
+      { title: "Gold Souk Shopping & Luxury Departure", theme: "Departure" }
+    ]
+  },
+  singapore: {
+    city: "Singapore",
+    airportCode: "SIN",
+    airportLocation: "Singapore Changi Airport (SIN Jewel Terminal 3)",
+    airportCoord: { lat: 1.364, lng: 103.991 },
+    flightInbound: "Inbound Flight: Delhi (DEL) → Singapore (SIN)",
+    flightOutbound: "Outbound Flight: Singapore (SIN) → Delhi (DEL)",
+    flightDuration: 330,
+    flightCost: 16500,
+    hotel: {
+      name: "Marina Bay Heritage & Garden Hotel",
+      location: "Marina Bay / Clarke Quay Enclave",
+      coordinates: { lat: 1.284, lng: 103.859 }
+    },
+    welcomeLunch: {
+      title: "Legendary Hainanese Chicken Rice & Dim Sum Lunch",
+      location: "Lau Pa Sat Historic Hawker Festival",
+      cost: 850,
+      coordinates: { lat: 1.280, lng: 103.850 }
+    },
+    sunsetDinner: {
+      title: "Jumbo Seafood World-Famous Chilli Crab Dinner",
+      location: "Clarke Quay Riverside Promenade",
+      cost: 2100,
+      coordinates: { lat: 1.289, lng: 103.844 }
+    },
+    villaBreakfast: {
+      title: "Artisan Kaya Toast, Soft-Boiled Eggs & Teh Tarik",
+      cost: 450
+    },
+    midLunch: {
+      title: "Michelin Hawker Chan Soy Sauce Chicken & Noodles",
+      location: "Chinatown Complex Hawker Centre",
+      cost: 750
+    },
+    midDinner: {
+      title: "Spectacular Garden Rhapsody Light Show Dinner",
+      location: "SuperTree Grove Dining Pavilion",
+      cost: 1800
+    },
+    farewellLunch: {
+      title: "Artisan Peranakan Laksa & Satay Skewers Lunch",
+      location: "Old Airport Road Food Centre",
+      cost: 800
+    },
+    tripIdPrefix: "TS-SIN",
+    dayTitles: [
+      { title: "Changi Jewel Arrival & Marina Bay Twilight", theme: "Arrival" },
+      { title: "Gardens by the Bay & Cloud Forest Wonders", theme: "Nature" },
+      { title: "Sentosa Island Sky Cable Car & Beach Club", theme: "Adventure" },
+      { title: "Chinatown, Little India & Hawker Food Trail", theme: "Culture" },
+      { title: "Orchard Road Souvenirs & Changi Departure", theme: "Departure" }
+    ]
+  }
+}
+
+/**
+ * Resolves destination profile from any destination string or object
+ */
+export function getDestinationProfile(query = "Goa") {
+  const q = String(query || "").toLowerCase()
+  if (q.includes("jaipur") || q.includes("rajasthan")) return destinationProfiles.jaipur
+  if (q.includes("kerala") || q.includes("munnar") || q.includes("alleppey") || q.includes("cochin")) return destinationProfiles.kerala
+  if (q.includes("dubai") || q.includes("uae") || q.includes("emirates")) return destinationProfiles.dubai
+  if (q.includes("singapore")) return destinationProfiles.singapore
+  if (q.includes("goa")) return destinationProfiles.goa
+
+  // Dynamic fallback for any custom destination
+  const cleanCity = (query ? String(query).split(',')[0].trim() : "Destination") || "Destination"
+  return {
+    city: cleanCity,
+    airportCode: cleanCity.slice(0, 3).toUpperCase(),
+    airportLocation: `${cleanCity} International Airport`,
+    airportCoord: { lat: 15.38, lng: 73.83 },
+    flightInbound: `Inbound Flight: Hub → ${cleanCity}`,
+    flightOutbound: `Outbound Flight: ${cleanCity} → Hub`,
+    flightDuration: 120,
+    flightCost: 4500,
+    hotel: {
+      name: `${cleanCity} Boutique Heritage Villa`,
+      location: `Central ${cleanCity}`,
+      coordinates: { lat: 15.501, lng: 73.815 }
+    },
+    welcomeLunch: {
+      title: `Welcome Local ${cleanCity} Culinary Lunch`,
+      location: `${cleanCity} Heritage Bistro`,
+      cost: 700,
+      coordinates: { lat: 15.498, lng: 73.827 }
+    },
+    sunsetDinner: {
+      title: `Scenic Sunset Dinner in ${cleanCity}`,
+      location: `${cleanCity} Waterfront Bistro`,
+      cost: 950,
+      coordinates: { lat: 15.498, lng: 73.827 }
+    },
+    villaBreakfast: {
+      title: `Villa Breakfast with Local Specialties`,
+      cost: 350
+    },
+    midLunch: {
+      title: `Artisan Regional Lunch`,
+      location: `${cleanCity} Old Town Bistro`,
+      cost: 650
+    },
+    midDinner: {
+      title: `Chef's Curated Dinner`,
+      location: `${cleanCity} Panoramic Terrace`,
+      cost: 900
+    },
+    farewellLunch: {
+      title: `Farewell ${cleanCity} Lunch`,
+      location: `${cleanCity} Central Dining`,
+      cost: 750
+    },
+    tripIdPrefix: `TS-${cleanCity.slice(0, 3).toUpperCase()}`,
+    dayTitles: [
+      { title: `${cleanCity} Arrival & Scenic Exploration`, theme: "Arrival" },
+      { title: `Iconic Highlights & Adventures`, theme: "Adventure" },
+      { title: `Culture & Living Heritage Trail`, theme: "Culture" },
+      { title: `Scenic Horizons & Leisure`, theme: "Leisure" },
+      { title: `Souvenirs & Departure`, theme: "Departure" }
+    ]
+  }
+}
 
 /**
  * Calculates geographic distance (in kilometers) between two coordinates
@@ -23,7 +368,7 @@ export function calculateDistanceKm(coord1, coord2) {
  */
 export function estimateTransfer(fromCoord, toCoord, fromName, toName) {
   const distKm = calculateDistanceKm(fromCoord, toCoord)
-  // Average coastal speed ~30 km/h + 10 min buffer
+  // Average city/coastal speed ~30 km/h + 10 min buffer
   const durationMinutes = Math.max(20, Math.round((distKm / 30) * 60 + 10))
   // Approx ₹30/km base cab fare with min ₹400
   const cost = Math.max(450, Math.round(distKm * 28 + 250))
@@ -33,7 +378,7 @@ export function estimateTransfer(fromCoord, toCoord, fromName, toName) {
     durationMinutes,
     cost,
     title: `Transfer: ${fromName || 'Origin'} → ${toName || 'Destination'}`,
-    description: `Private AC sedan transfer via coastal highway (${distKm} km • ~${durationMinutes} min)`
+    description: `Private AC sedan transfer via local highway (${distKm} km • ~${durationMinutes} min)`
   }
 }
 
@@ -44,31 +389,37 @@ export function generateItinerary(tripPreferences, selectedExperiences = []) {
   const daysCount = tripPreferences?.duration?.days || 4
   const adultCount = Math.max(1, tripPreferences?.travelers?.adults || 2)
   const baseBudget = tripPreferences?.budget?.total || 35000
-  const destName = tripPreferences?.destination?.city || "Goa"
+  const rawDest = tripPreferences?.destination?.city || tripPreferences?.destination?.name || "Goa"
+  const profile = getDestinationProfile(rawDest)
+  const destExperiences = getExperiencesByDestination(profile.city)
 
-  // Resolve experience objects
+  // Resolve experience objects from destination catalogue
   const stagedExperiences = selectedExperiences.map(sel => {
-    const found = goaExperiences.find(e => e.id === sel.experienceId || e.id === sel.id)
-    return found || goaExperiences[0]
-  })
+    const found = destExperiences.find(e => e.id === sel.experienceId || e.id === sel.id) ||
+                  allExperiences.find(e => e.id === sel.experienceId || e.id === sel.id)
+    return found
+  }).filter(Boolean)
 
   // Fallback pool if traveler selected few items
-  const fallbackPool = goaExperiences.filter(exp => 
+  const fallbackPool = destExperiences.filter(exp => 
     !stagedExperiences.some(s => s.id === exp.id)
   )
 
   // Combined pool of experiences to place
   const pool = [...stagedExperiences, ...fallbackPool]
-
-  // Default Hotel Node for Goa
-  const defaultHotel = {
-    name: "Heritage Boutique Villa & Resort",
-    location: "Panjim Riverside / Candolim",
-    coordinates: { lat: 15.501, lng: 73.815 },
-    costPerNight: Math.round((baseBudget * 0.35) / Math.max(1, daysCount - 1) / 2) // Per room approx
+  if (pool.length === 0) {
+    pool.push(...destExperiences)
   }
 
-  const airportCoord = { lat: 15.38, lng: 73.83 } // Dabolim Airport
+  // Hotel Node from destination profile
+  const defaultHotel = {
+    name: profile.hotel.name,
+    location: profile.hotel.location,
+    coordinates: profile.hotel.coordinates,
+    costPerNight: Math.round((baseBudget * 0.35) / Math.max(1, daysCount - 1) / 2)
+  }
+
+  const airportCoord = profile.airportCoord
 
   const days = []
   let experiencePointer = 0
@@ -78,12 +429,12 @@ export function generateItinerary(tripPreferences, selectedExperiences = []) {
     const isLastDay = d === daysCount
     const items = []
 
-    let dayTitle = "Coastal Discovery"
-    let dayTheme = "Exploration"
+    let dayTitle = profile.dayTitles[Math.min(d - 1, profile.dayTitles.length - 1)]?.title || "Discovery & Highlights"
+    let dayTheme = profile.dayTitles[Math.min(d - 1, profile.dayTitles.length - 1)]?.theme || "Exploration"
 
     if (isFirstDay) {
-      dayTitle = "Arrival & Latin Quarter Sunset"
-      dayTheme = "Arrival"
+      dayTitle = profile.dayTitles[0]?.title || "Arrival & Sunset Exploration"
+      dayTheme = profile.dayTitles[0]?.theme || "Arrival"
 
       // 1. Flight Node
       const flightId = `item-d${d}-flight`
@@ -96,12 +447,12 @@ export function generateItinerary(tripPreferences, selectedExperiences = []) {
       items.push({
         id: flightId,
         type: "flight",
-        title: "Inbound Flight: Mumbai (BOM) → Goa (GOI)",
+        title: profile.flightInbound,
         startTime: "09:20",
         endTime: "10:35",
-        location: "Dabolim International Terminal",
-        durationMinutes: 75,
-        cost: 4200 * adultCount,
+        location: profile.airportLocation,
+        durationMinutes: profile.flightDuration,
+        cost: profile.flightCost * adultCount,
         status: "confirmed",
         movable: false,
         critical: true,
@@ -112,15 +463,15 @@ export function generateItinerary(tripPreferences, selectedExperiences = []) {
       })
 
       // 2. Airport Transfer
-      const transferEstimate = estimateTransfer(airportCoord, defaultHotel.coordinates, "Airport", "Villa")
+      const transferEstimate = estimateTransfer(airportCoord, defaultHotel.coordinates, "Airport", defaultHotel.name)
       items.push({
         id: transferArrId,
         type: "transport",
-        title: "Airport Transfer to Boutique Villa",
+        title: `Airport Transfer to ${defaultHotel.name}`,
         startTime: "11:00",
         endTime: "11:55",
-        location: "Goa Airport → Panjim Riverside",
-        durationMinutes: 55,
+        location: `${profile.airportLocation} → ${defaultHotel.location}`,
+        durationMinutes: transferEstimate.durationMinutes,
         cost: transferEstimate.cost,
         status: "confirmed",
         movable: true,
@@ -154,17 +505,17 @@ export function generateItinerary(tripPreferences, selectedExperiences = []) {
       items.push({
         id: lunchId,
         type: "meal",
-        title: "Welcome Traditional Goan Lunch",
+        title: profile.welcomeLunch.title,
         startTime: "13:15",
         endTime: "14:30",
-        location: "Panjim Heritage Bistro",
+        location: profile.welcomeLunch.location,
         durationMinutes: 75,
-        cost: 650 * adultCount,
+        cost: profile.welcomeLunch.cost * adultCount,
         status: "scheduled",
         movable: true,
         critical: false,
         intensity: "low",
-        coordinates: { lat: 15.498, lng: 73.827 },
+        coordinates: profile.welcomeLunch.coordinates || defaultHotel.coordinates,
         dependencies: [checkinId],
         downstream: [exp1Id]
       })
@@ -188,7 +539,7 @@ export function generateItinerary(tripPreferences, selectedExperiences = []) {
       })
 
       // 6. Day 1 Sunset Experience (Pulls from pool)
-      const day1Exp = pool[experiencePointer++] || goaExperiences[1]
+      const day1Exp = pool[experiencePointer++] || destExperiences[1] || destExperiences[0]
       items.push({
         id: exp1Id,
         type: "experience",
@@ -213,23 +564,23 @@ export function generateItinerary(tripPreferences, selectedExperiences = []) {
       items.push({
         id: dinnerId,
         type: "meal",
-        title: "Riverside Candlelight Dinner",
+        title: profile.sunsetDinner.title,
         startTime: "19:45",
         endTime: "21:30",
-        location: "Viva Panjim / Waterfront",
+        location: profile.sunsetDinner.location,
         durationMinutes: 105,
-        cost: 900 * adultCount,
+        cost: profile.sunsetDinner.cost * adultCount,
         status: "scheduled",
         movable: true,
         critical: false,
         intensity: "low",
-        coordinates: { lat: 15.498, lng: 73.827 },
+        coordinates: profile.sunsetDinner.coordinates || defaultHotel.coordinates,
         dependencies: [exp1Id],
         downstream: []
       })
 
     } else if (isLastDay) {
-      dayTitle = "Heritage Souvenirs & Departure"
+      dayTitle = profile.dayTitles[profile.dayTitles.length - 1]?.title || "Souvenirs & Departure"
       dayTheme = "Departure"
 
       const bfastId = `item-d${d}-bfast`
@@ -243,12 +594,12 @@ export function generateItinerary(tripPreferences, selectedExperiences = []) {
       items.push({
         id: bfastId,
         type: "meal",
-        title: "Villa Buffet Breakfast",
+        title: profile.villaBreakfast.title,
         startTime: "08:30",
         endTime: "09:45",
         location: defaultHotel.name,
         durationMinutes: 75,
-        cost: 350 * adultCount,
+        cost: profile.villaBreakfast.cost * adultCount,
         status: "scheduled",
         movable: true,
         critical: false,
@@ -259,7 +610,7 @@ export function generateItinerary(tripPreferences, selectedExperiences = []) {
       })
 
       // 2. Morning Souvenirs / Light Experience
-      const lastDayExp = pool[experiencePointer++] || goaExperiences[9]
+      const lastDayExp = pool[experiencePointer++] || destExperiences[destExperiences.length - 1] || destExperiences[0]
       items.push({
         id: expMorningId,
         type: "experience",
@@ -303,12 +654,12 @@ export function generateItinerary(tripPreferences, selectedExperiences = []) {
       items.push({
         id: lunchId,
         type: "meal",
-        title: "Coastal Farewell Seafood Lunch",
+        title: profile.farewellLunch.title,
         startTime: "13:00",
         endTime: "14:15",
-        location: "Panjim Bistro",
+        location: profile.farewellLunch.location,
         durationMinutes: 75,
-        cost: 700 * adultCount,
+        cost: profile.farewellLunch.cost * adultCount,
         status: "scheduled",
         movable: true,
         critical: false,
@@ -319,15 +670,15 @@ export function generateItinerary(tripPreferences, selectedExperiences = []) {
       })
 
       // 5. Transfer to Airport
-      const transferOutEstimate = estimateTransfer(defaultHotel.coordinates, airportCoord, "Villa", "Airport")
+      const transferOutEstimate = estimateTransfer(defaultHotel.coordinates, airportCoord, defaultHotel.name, profile.airportLocation)
       items.push({
         id: transferDepId,
         type: "transport",
-        title: "Airport Drop Transfer",
+        title: `Airport Drop Transfer to ${profile.airportLocation}`,
         startTime: "14:45",
         endTime: "15:40",
-        location: "Hotel → Goa International Airport",
-        durationMinutes: 55,
+        location: `${defaultHotel.location} → ${profile.airportLocation}`,
+        durationMinutes: transferOutEstimate.durationMinutes,
         cost: transferOutEstimate.cost,
         status: "confirmed",
         movable: false,
@@ -342,12 +693,12 @@ export function generateItinerary(tripPreferences, selectedExperiences = []) {
       items.push({
         id: flightOutId,
         type: "flight",
-        title: "Outbound Flight: Goa (GOI) → Mumbai (BOM)",
+        title: profile.flightOutbound,
         startTime: "17:15",
         endTime: "18:30",
-        location: "Dabolim International Terminal",
-        durationMinutes: 75,
-        cost: 4100 * adultCount,
+        location: profile.airportLocation,
+        durationMinutes: profile.flightDuration,
+        cost: profile.flightCost * adultCount,
         status: "confirmed",
         movable: false,
         critical: true,
@@ -359,8 +710,9 @@ export function generateItinerary(tripPreferences, selectedExperiences = []) {
 
     } else {
       // Mid-trip Days (Adventure / Culture / Experiences)
-      dayTitle = d === 2 ? "Adventure & Coastal Waters" : "Culture, Spice & Heritage Trail"
-      dayTheme = d === 2 ? "Adventure" : "Culture"
+      const themeIdx = (d - 1) % profile.dayTitles.length
+      dayTitle = profile.dayTitles[themeIdx]?.title || (d === 2 ? "Highland & Coastal Adventures" : "Culture, Crafts & Heritage Trail")
+      dayTheme = profile.dayTitles[themeIdx]?.theme || (d === 2 ? "Adventure" : "Culture")
 
       const bfastId = `item-d${d}-bfast`
       const expMorningId = `item-d${d}-exp-morning`
@@ -373,12 +725,12 @@ export function generateItinerary(tripPreferences, selectedExperiences = []) {
       items.push({
         id: bfastId,
         type: "meal",
-        title: "Tropical Villa Breakfast",
+        title: profile.villaBreakfast.title,
         startTime: "08:00",
         endTime: "09:00",
         location: defaultHotel.name,
         durationMinutes: 60,
-        cost: 350 * adultCount,
+        cost: profile.villaBreakfast.cost * adultCount,
         status: "scheduled",
         movable: true,
         critical: false,
@@ -389,7 +741,7 @@ export function generateItinerary(tripPreferences, selectedExperiences = []) {
       })
 
       // 2. Morning Experience
-      const morningExp = pool[experiencePointer++] || goaExperiences[0]
+      const morningExp = pool[experiencePointer++] || destExperiences[(d - 1) % destExperiences.length] || destExperiences[0]
       items.push({
         id: expMorningId,
         type: "experience",
@@ -414,12 +766,12 @@ export function generateItinerary(tripPreferences, selectedExperiences = []) {
       items.push({
         id: lunchId,
         type: "meal",
-        title: "Artisan Lunch & Coconut Drinks",
+        title: profile.midLunch.title,
         startTime: "13:15",
         endTime: "14:30",
-        location: "Beachside Shacks / Garden Bistro",
+        location: profile.midLunch.location,
         durationMinutes: 75,
-        cost: 600 * adultCount,
+        cost: profile.midLunch.cost * adultCount,
         status: "scheduled",
         movable: true,
         critical: false,
@@ -448,7 +800,7 @@ export function generateItinerary(tripPreferences, selectedExperiences = []) {
       })
 
       // 5. Afternoon / Sunset Experience
-      const eveningExp = pool[experiencePointer++] || goaExperiences[2]
+      const eveningExp = pool[experiencePointer++] || destExperiences[d % destExperiences.length] || destExperiences[1]
       items.push({
         id: expEveningId,
         type: "experience",
@@ -473,12 +825,12 @@ export function generateItinerary(tripPreferences, selectedExperiences = []) {
       items.push({
         id: dinnerId,
         type: "meal",
-        title: "Chef's Curated Goan Dinner",
+        title: profile.midDinner.title,
         startTime: "19:45",
         endTime: "21:45",
-        location: "Cliffside / Latin Quarter",
+        location: profile.midDinner.location,
         durationMinutes: 120,
-        cost: 850 * adultCount,
+        cost: profile.midDinner.cost * adultCount,
         status: "scheduled",
         movable: true,
         critical: false,
@@ -503,8 +855,8 @@ export function generateItinerary(tripPreferences, selectedExperiences = []) {
   const flexibility = calculateFlexibilityScore(days)
 
   return {
-    tripId: "TS-GOA-108",
-    destination: destName,
+    tripId: `${profile.tripIdPrefix}-108`,
+    destination: profile.city,
     daysCount,
     days,
     summary,

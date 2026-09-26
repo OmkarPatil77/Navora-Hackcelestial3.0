@@ -9,7 +9,7 @@ import {
 import { useTripPlan } from '@/context/TripPlanningContext'
 import { isGeminiConfigured, buildCopilotContext, sendCopilotMessage } from '@/services/geminiService'
 import { executeAiAction } from '@/services/aiActionExecutor'
-import { goaExperiences } from '@/data/experiences'
+import { goaExperiences, allExperiences } from '@/data/experiences'
 import { Button } from '@/components/ui/Button'
 import { Badge } from '@/components/ui/Badge'
 import { formatCurrency } from '@/lib/utils'
@@ -186,7 +186,7 @@ export const TripSaathiCopilot = () => {
   }
 
   const handleAddRecommended = (expId) => {
-    const exp = goaExperiences.find(e => e.id === expId)
+    const exp = allExperiences.find(e => e.id === expId)
     if (exp) {
       addExperience(exp)
       setMessages(prev => [
@@ -387,7 +387,7 @@ export const TripSaathiCopilot = () => {
                       {msg.recommendedExperienceIds && msg.recommendedExperienceIds.length > 0 && (
                         <div className="space-y-1.5 pt-1">
                           {msg.recommendedExperienceIds.map(expId => {
-                            const exp = goaExperiences.find(e => e.id === expId)
+                            const exp = allExperiences.find(e => e.id === expId)
                             if (!exp) return null
                             return (
                               <div

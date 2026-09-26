@@ -17,15 +17,28 @@ export const RouteVisualizer = ({ dayItems = [], dayTitle = "Day Route" }) => {
     totalRouteKm += calculateDistanceKm(validStops[i].coordinates, validStops[i + 1].coordinates)
   }
 
-  // Pre-calculated coordinates projection on a 500x320 canvas
-  // Goa latitude range: ~14.9 to ~15.8, longitude range: ~73.6 to ~74.3
-  const mapPoints = validStops.map((stop, idx) => {
-    const lat = stop.coordinates?.lat || (15.3 + idx * 0.05)
-    const lng = stop.coordinates?.lng || (73.7 + idx * 0.04)
+  // Dynamic bounding box normalization across any destination's coordinates
+  const lats = validStops.map(s => s.coordinates?.lat).filter(Boolean)
+  const lngs = validStops.map(s => s.coordinates?.lng).filter(Boolean)
 
-    // Normalize to canvas coordinates (500 width, 280 height)
-    const x = Math.min(460, Math.max(40, ((lng - 73.65) / 0.7) * 420 + 40))
-    const y = Math.min(250, Math.max(30, 260 - ((lat - 14.95) / 0.85) * 230))
+  const minLat = lats.length > 0 ? Math.min(...lats) : 15.0
+  const maxLat = lats.length > 0 ? Math.max(...lats) : 16.0
+  const minLng = lngs.length > 0 ? Math.min(...lngs) : 73.0
+  const maxLng = lngs.length > 0 ? Math.max(...lngs) : 74.0
+
+  const latSpan = Math.max(0.05, maxLat - minLat)
+  const lngSpan = Math.max(0.05, maxLng - minLng)
+
+  const mapPoints = validStops.map((stop, idx) => {
+    const lat = stop.coordinates?.lat != null ? stop.coordinates.lat : (minLat + (idx / Math.max(1, validStops.length)) * latSpan)
+    const lng = stop.coordinates?.lng != null ? stop.coordinates.lng : (minLng + (idx / Math.max(1, validStops.length)) * lngSpan)
+
+    // Normalize to canvas coordinates (500 width, 280 height) with comfortable margins
+    const normX = (lng - minLng) / lngSpan
+    const normY = (lat - minLat) / latSpan
+
+    const x = Math.min(460, Math.max(50, Math.round(50 + normX * 380)))
+    const y = Math.min(240, Math.max(40, Math.round(240 - normY * 190)))
 
     return {
       ...stop,
@@ -48,7 +61,7 @@ export const RouteVisualizer = ({ dayItems = [], dayTitle = "Day Route" }) => {
           </div>
           <div>
             <h3 className="font-serif font-bold text-sm sm:text-base text-charcoal-950">
-              Daily Coastal Route Map
+              Daily Journey Route Map
             </h3>
             <p className="text-[11px] text-muted-foreground">
               {validStops.length} Waypoints • Est. {Math.round(totalRouteKm)} km total travel
@@ -64,7 +77,7 @@ export const RouteVisualizer = ({ dayItems = [], dayTitle = "Day Route" }) => {
       {/* Stylized SVG Map Canvas */}
       <div className="relative h-64 sm:h-72 w-full bg-sand-100/50 border-y border-sand-200/80 overflow-hidden">
         
-        {/* Subtle coastline background contour styling */}
+        {/* Subtle grid background contour styling */}
         <svg className="absolute inset-0 w-full h-full pointer-events-none opacity-40">
           <defs>
             <linearGradient id="routeGrad" x1="0%" y1="0%" x2="100%" y2="100%">
@@ -79,17 +92,17 @@ export const RouteVisualizer = ({ dayItems = [], dayTitle = "Day Route" }) => {
           {/* Grid Background */}
           <rect width="100%" height="100%" fill="url(#gridPattern)" />
 
-          {/* Arabian Sea wave decorative backdrop */}
+          {/* Subtle geographic backdrop */}
           <path
             d="M 0,0 Q 80,120 110,280 L 0,280 Z"
             fill="#E0ECE9"
-            opacity="0.6"
+            opacity="0.4"
           />
           <text x="25" y="140" fill="#789B95" fontSize="10" fontWeight="bold" letterSpacing="2">
-            ARABIAN SEA
+            REGIONAL TRANSIT
           </text>
-          <text x="320" y="40" fill="#B5ADA3" fontSize="10" fontWeight="bold" letterSpacing="1">
-            GOA COASTAL HIGHWAY
+          <text x="310" y="40" fill="#B5ADA3" fontSize="10" fontWeight="bold" letterSpacing="1">
+            LOCAL HIGHWAY ROUTE
           </text>
         </svg>
 

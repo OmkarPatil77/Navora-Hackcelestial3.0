@@ -96,7 +96,7 @@ export const Itinerary = () => {
                 <Calendar className="w-3.5 h-3.5 text-terracotta-600" />
                 <span>Day-by-Day Schedule</span>
               </span>
-              <span className="text-xs text-muted-foreground">• Trip Code: TS-GOA-108</span>
+              <span className="text-xs text-muted-foreground">• Trip Code: {itinerary?.tripId || 'TS-108'}</span>
             </div>
 
             <h1 className="text-3xl sm:text-4xl font-bold font-serif text-charcoal-950">

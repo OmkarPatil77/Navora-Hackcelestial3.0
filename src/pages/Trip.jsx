@@ -150,7 +150,7 @@ export const Trip = () => {
                 <span className="text-xs font-bold uppercase tracking-wider text-charcoal-800">
                   Tour in Progress
                 </span>
-                <span className="text-xs text-muted-foreground">• TS-GOA-108</span>
+                <span className="text-xs text-muted-foreground">• {itinerary?.tripId || 'TS-108'}</span>
                 <span className="text-xs text-muted-foreground">• {tripPreferences.destination?.name || 'Goa'} · Day 1 of 4</span>
                 <span className="text-xs text-muted-foreground">• {tripPreferences.travelers?.total || 2} Travelers</span>
               </div>

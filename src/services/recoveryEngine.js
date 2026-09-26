@@ -1,4 +1,4 @@
-import { goaExperiences } from '../data/experiences.js'
+import { goaExperiences, getExperiencesByDestination, allExperiences } from '../data/experiences.js'
 import { minutesToTime, timeToMinutes, shiftTime } from './disruptionEngine.js'
 
 /**
@@ -52,19 +52,38 @@ export function generateRecoveryPlans(itinerary, impactAnalysis, tripPreferences
   const conflictNode = impactAnalysis.conflictNodes?.[0] || impactAnalysis.impactedNodes?.find(i => i.type === 'experience')
   const originalItems = day1.items || []
 
-  // Find candidate replacement experience (e.g., Fontainhas Heritage Walk)
-  const fontainhasExp = goaExperiences.find(e => e.id === 'goa-fontainhas-heritage-walk') || {
-    id: "goa-fontainhas-heritage-walk",
-    title: "Fontainhas Latin Quarter Heritage & Culinary Walk",
-    pricePerPerson: 1600,
-    durationHours: 2.5,
-    location: "Panjim, North Goa",
-    intensity: "low"
+  const destName = tripPreferences?.destination?.city || tripPreferences?.destination?.name || itinerary?.destination || "Goa"
+  const destExperiences = getExperiencesByDestination(destName)
+  const origFlight = originalItems.find(i => i.type === 'flight') || {
+    title: `Inbound Flight to ${destName}`,
+    location: `${destName} Airport`
   }
+  const origTransfer = originalItems.find(i => i.type === 'transport') || {
+    title: `Airport Transfer`,
+    location: `${destName}`
+  }
+  const origHotel = originalItems.find(i => i.type === 'hotel') || {
+    title: `Boutique Villa Check-in`,
+    location: `${destName}`
+  }
+  const meals = originalItems.filter(i => i.type === 'meal')
+  const origLunch = meals[0] || { title: "Welcome Regional Lunch", location: `${destName} Bistro` }
+  const origDinner = meals[1] || { title: "Scenic Evening Dinner", location: `${destName} Waterfront` }
 
-  const origExpCost = conflictNode ? (selectedExperiences.find(e => e.id === conflictNode.nodeId)?.pricePerPerson || 2800) : 2800
-  const replacementCost = fontainhasExp.pricePerPerson || 1600
-  const costDiff = origExpCost - replacementCost // e.g. 2800 - 1600 = 1200
+  const origExperiences = originalItems.filter(i => i.type === 'experience')
+  const mainExp = origExperiences[0] || destExperiences[0]
+  const secondExp = origExperiences[1] || destExperiences[1] || mainExp
+
+  // Find candidate replacement experience (e.g., cultural/walking tour)
+  const replacementExp = destExperiences.find(e => 
+    e.id !== mainExp?.experienceId && e.id !== mainExp?.id && 
+    (e.intensity === 'low' || e.pace === 'moderate')
+  ) || destExperiences[1] || destExperiences[0]
+
+  const adultCount = Math.max(1, tripPreferences.travelers?.adults || 2)
+  const origExpCost = mainExp.cost ? Math.round(mainExp.cost / adultCount) : (mainExp.pricePerPerson || 2800)
+  const replacementCost = replacementExp.pricePerPerson || 1600
+  const costDiff = Math.max(0, origExpCost - replacementCost)
 
   // --------------------------------------------------------------------------
   // PLAN A — PRESERVE: Preserve Your Experiences (Compact schedule, shift windows)
@@ -73,71 +92,71 @@ export function generateRecoveryPlans(itinerary, impactAnalysis, tripPreferences
     {
       id: "item-d1-flight",
       type: "flight",
-      title: "Inbound Flight: Mumbai (BOM) → Goa (GOI)",
+      title: origFlight.title,
       startTime: impactAnalysis.disruption.newStartTime,
       endTime: impactAnalysis.disruption.newEndTime,
-      location: "Dabolim International Terminal"
+      location: origFlight.location
     },
     {
       id: "item-d1-arr-transfer",
       type: "transport",
-      title: "Private Airport Cab Transfer (Expedited)",
+      title: `${origTransfer.title} (Expedited)`,
       startTime: "12:15",
       endTime: "13:00",
       durationMinutes: 45,
-      location: "Dabolim → Panjim"
+      location: origTransfer.location
     },
     {
       id: "item-d1-checkin",
       type: "hotel",
-      title: "Express Check-in @ Heritage Villa",
+      title: `Express Check-in @ ${origHotel.title.replace('Check-in at ', '').replace('Check-in @ ', '')}`,
       startTime: "13:00",
       endTime: "13:30",
       durationMinutes: 30,
-      location: "Panjim Waterfront Villa"
+      location: origHotel.location
     },
     {
       id: "item-d1-lunch",
       type: "meal",
-      title: "Express Coastal Welcome Lunch",
+      title: `Express ${origLunch.title}`,
       startTime: "13:30",
       endTime: "14:15",
       durationMinutes: 45,
-      location: "Fontainhas, Panjim"
+      location: origLunch.location
     },
     {
       id: "item-d1-exp-1",
       type: "experience",
-      experienceId: "goa-scuba-grand-island",
-      title: "Grand Island Scuba (Express Afternoon Slot)",
+      experienceId: mainExp.experienceId || mainExp.id,
+      title: `${mainExp.title} (Express Slot)`,
       startTime: "14:30",
       endTime: "18:00",
       durationMinutes: 210,
-      cost: origExpCost,
+      cost: origExpCost * adultCount,
       pricePerPerson: origExpCost,
-      intensity: "high",
-      location: "Grande Island, South Goa"
+      intensity: mainExp.intensity || "high",
+      location: mainExp.location
     },
     {
       id: "item-d1-sunset",
       type: "experience",
-      experienceId: "goa-mandovi-sunset-cruise",
-      title: "Mandovi River Luxury Catamaran Sunset Cruise",
+      experienceId: secondExp.experienceId || secondExp.id,
+      title: secondExp.title,
       startTime: "18:30",
       endTime: "20:00",
       durationMinutes: 90,
-      cost: 1800,
-      pricePerPerson: 1800,
-      location: "Mandovi River Jetty, Panjim"
+      cost: (secondExp.pricePerPerson || 1800) * adultCount,
+      pricePerPerson: secondExp.pricePerPerson || 1800,
+      location: secondExp.location
     },
     {
       id: "item-d1-dinner",
       type: "meal",
-      title: "Candlelight Riverside Dinner @ Fisherman's Wharf",
+      title: origDinner.title,
       startTime: "20:15",
       endTime: "22:15",
       durationMinutes: 120,
-      location: "Fisherman's Wharf, Panjim"
+      location: origDinner.location
     }
   ]
 
@@ -146,9 +165,9 @@ export function generateRecoveryPlans(itinerary, impactAnalysis, tripPreferences
     strategy: "PRESERVE",
     badge: "Maximum Activities",
     title: "Preserve All Experiences",
-    subtitle: "Compress buffer windows to keep the original Grand Island dive expedition.",
-    description: "Shifts your transfers and converts welcome lunch into an express seaside meal so you can still attend Scuba Diving without missing dinner.",
-    experiencesPreserved: "5 of 5",
+    subtitle: `Compress buffer windows to keep the original ${mainExp.title}.`,
+    description: `Shifts your transfers and converts welcome lunch into an express meal so you can still attend ${mainExp.title} without missing evening plans.`,
+    experiencesPreserved: `${origExperiences.length || 2} of ${origExperiences.length || 2}`,
     flexibilityImpact: "42 min remaining",
     flexibilityDelta: -30,
     costImpact: "₹0 extra cost",
@@ -160,7 +179,7 @@ export function generateRecoveryPlans(itinerary, impactAnalysis, tripPreferences
       { type: "SHIFT", text: `Inbound flight shifted +${delayMins}m to ${impactAnalysis.disruption.newStartTime} arrival.` },
       { type: "SHIFT", text: "Airport transfer & check-in delayed to 12:15 → 13:30." },
       { type: "COMPRESS", text: "Lunch shortened to 45m express meal." },
-      { type: "PRESERVED", text: "Scuba dive rescheduled to compact 14:30 – 18:00 window." },
+      { type: "PRESERVED", text: `${mainExp.title} rescheduled to compact 14:30 – 18:00 window.` },
       { type: "PROTECTED", text: "Dinner reservation shifted to 20:15." }
     ],
     recommended: false
@@ -173,73 +192,73 @@ export function generateRecoveryPlans(itinerary, impactAnalysis, tripPreferences
     {
       id: "item-d1-flight",
       type: "flight",
-      title: "Inbound Flight: Mumbai (BOM) → Goa (GOI)",
+      title: origFlight.title,
       startTime: impactAnalysis.disruption.newStartTime,
       endTime: impactAnalysis.disruption.newEndTime,
-      location: "Dabolim International Terminal"
+      location: origFlight.location
     },
     {
       id: "item-d1-arr-transfer",
       type: "transport",
-      title: "Private Airport Cab Transfer to Villa",
+      title: origTransfer.title,
       startTime: "12:15",
       endTime: "13:10",
       durationMinutes: 55,
-      location: "Dabolim → Panjim"
+      location: origTransfer.location
     },
     {
       id: "item-d1-checkin",
       type: "hotel",
-      title: "Check-in & Villa Unpacking @ Heritage Villa",
+      title: `Check-in & Unpacking @ ${origHotel.title.replace('Check-in at ', '').replace('Check-in @ ', '')}`,
       startTime: "13:15",
       endTime: "14:00",
       durationMinutes: 45,
-      location: "Panjim Waterfront Villa"
+      location: origHotel.location
     },
     {
       id: "item-d1-lunch",
       type: "meal",
-      title: "Authentic Coastal Welcome Lunch @ Kokum Club",
+      title: origLunch.title,
       startTime: "14:00",
       endTime: "15:30",
       durationMinutes: 90,
-      location: "Fontainhas, Panjim"
+      location: origLunch.location
     },
     {
-      id: "goa-fontainhas-heritage-walk",
+      id: replacementExp.id,
       type: "experience",
-      experienceId: "goa-fontainhas-heritage-walk",
-      title: "Fontainhas Latin Quarter Heritage & Culinary Walk",
-      category: "Food",
-      cost: 1600,
-      pricePerPerson: 1600,
+      experienceId: replacementExp.id,
+      title: replacementExp.title,
+      category: replacementExp.category || "Culture",
+      cost: replacementCost * adultCount,
+      pricePerPerson: replacementCost,
       startTime: "16:00",
       endTime: "18:30",
       durationMinutes: 150,
-      location: "Panjim, North Goa",
+      location: replacementExp.location,
       intensity: "low",
-      notes: "Seamless late afternoon stroll with zero rush and feni tasting."
+      notes: "Seamless late afternoon stroll with zero rush."
     },
     {
       id: "item-d1-sunset",
       type: "experience",
-      experienceId: "goa-mandovi-sunset-cruise",
-      title: "Mandovi River Luxury Catamaran Sunset Cruise",
+      experienceId: secondExp.experienceId || secondExp.id,
+      title: secondExp.title,
       startTime: "18:45",
       endTime: "20:15",
       durationMinutes: 90,
-      cost: 1800,
-      pricePerPerson: 1800,
-      location: "Mandovi River Jetty, Panjim"
+      cost: (secondExp.pricePerPerson || 1800) * adultCount,
+      pricePerPerson: secondExp.pricePerPerson || 1800,
+      location: secondExp.location
     },
     {
       id: "item-d1-dinner",
       type: "meal",
-      title: "Candlelight Riverside Dinner @ Fisherman's Wharf",
+      title: origDinner.title,
       startTime: "20:30",
       endTime: "22:30",
       durationMinutes: 120,
-      location: "Fisherman's Wharf, Panjim"
+      location: origDinner.location
     }
   ]
 
@@ -248,21 +267,21 @@ export function generateRecoveryPlans(itinerary, impactAnalysis, tripPreferences
     strategy: "BALANCED",
     badge: "Recommended",
     title: "Rebalance the Afternoon",
-    subtitle: "Swap high-intensity scuba for the relaxed Fontainhas Heritage Walk.",
-    description: "Eliminates time pressure. Enjoy a relaxed seafood lunch, explore historic Latin Quarters, and save budget while protecting your evening sunset.",
-    experiencesPreserved: "5 of 5 experiences",
+    subtitle: `Swap high-intensity activity for the relaxed ${replacementExp.title}.`,
+    description: `Eliminates time pressure. Enjoy a relaxed lunch, explore ${destName}'s cultural highlights, and save budget while protecting your evening plans.`,
+    experiencesPreserved: `${origExperiences.length || 2} of ${origExperiences.length || 2} experiences`,
     flexibilityImpact: "+45 min flexibility buffer",
     flexibilityDelta: 45,
-    costImpact: `₹${costDiff.toLocaleString('en-IN')} saved`,
-    costDelta: -costDiff,
+    costImpact: costDiff > 0 ? `₹${(costDiff * adultCount).toLocaleString('en-IN')} saved` : "₹0 extra cost",
+    costDelta: -(costDiff * adultCount),
     intensity: "Comfortable Pace",
     tags: ["Recommended", "Budget Saving", "Stress-Free", "Zero Conflict"],
     modifiedItems: planB_items,
     changes: [
-      { type: "REPLACE", text: "Replace 4.5h Scuba Dive with 2.5h Fontainhas Latin Quarter Walk (16:00 – 18:30)." },
-      { type: "SAVING", text: `Saves ₹${costDiff.toLocaleString('en-IN')} on activity admissions.` },
+      { type: "REPLACE", text: `Replace high-intensity activity with 2.5h ${replacementExp.title} (16:00 – 18:30).` },
+      { type: "SAVING", text: costDiff > 0 ? `Saves ₹${(costDiff * adultCount).toLocaleString('en-IN')} on activity admissions.` : "Budget protected." },
       { type: "BUFFER", text: "Expands lunch & check-in relaxation window by +45 minutes." },
-      { type: "PROTECTED", text: "Guarantees on-time arrival for Mandovi evening dinner." }
+      { type: "PROTECTED", text: "Guarantees on-time arrival for evening dinner reservation." }
     ],
     recommended: true
   }
@@ -274,28 +293,28 @@ export function generateRecoveryPlans(itinerary, impactAnalysis, tripPreferences
     {
       id: "item-d1-flight",
       type: "flight",
-      title: "Inbound Flight: Mumbai (BOM) → Goa (GOI)",
+      title: origFlight.title,
       startTime: impactAnalysis.disruption.newStartTime,
       endTime: impactAnalysis.disruption.newEndTime,
-      location: "Dabolim International Terminal"
+      location: origFlight.location
     },
     {
       id: "item-d1-arr-transfer",
       type: "transport",
-      title: "Private Airport Cab Transfer to Villa",
+      title: origTransfer.title,
       startTime: "12:15",
       endTime: "13:10",
       durationMinutes: 55,
-      location: "Dabolim → Panjim"
+      location: origTransfer.location
     },
     {
       id: "item-d1-checkin",
       type: "hotel",
-      title: "Resort Check-In & Beach Villa Unwinding",
+      title: `Resort Check-In & Unwinding @ ${origHotel.title.replace('Check-in at ', '').replace('Check-in @ ', '')}`,
       startTime: "13:15",
       endTime: "14:15",
       durationMinutes: 60,
-      location: "Panjim Waterfront Villa"
+      location: origHotel.location
     },
     {
       id: "item-d1-lunch",
@@ -309,32 +328,32 @@ export function generateRecoveryPlans(itinerary, impactAnalysis, tripPreferences
     {
       id: "item-d1-rest-buffer",
       type: "buffer",
-      title: "Rest & Sunset Beach Walk Buffer",
+      title: "Rest & Sunset Promenade Buffer",
       startTime: "15:30",
       endTime: "18:30",
       durationMinutes: 180,
-      location: "Villa Beachfront"
+      location: "Villa Grounds"
     },
     {
       id: "item-d1-sunset",
       type: "experience",
-      experienceId: "goa-mandovi-sunset-cruise",
-      title: "Mandovi River Luxury Catamaran Sunset Cruise",
+      experienceId: secondExp.experienceId || secondExp.id,
+      title: secondExp.title,
       startTime: "18:45",
       endTime: "20:15",
       durationMinutes: 90,
-      cost: 1800,
-      pricePerPerson: 1800,
-      location: "Mandovi River Jetty, Panjim"
+      cost: (secondExp.pricePerPerson || 1800) * adultCount,
+      pricePerPerson: secondExp.pricePerPerson || 1800,
+      location: secondExp.location
     },
     {
       id: "item-d1-dinner",
       type: "meal",
-      title: "Candlelight Riverside Dinner @ Fisherman's Wharf",
+      title: origDinner.title,
       startTime: "20:30",
       endTime: "22:30",
       durationMinutes: 120,
-      location: "Fisherman's Wharf, Panjim"
+      location: origDinner.location
     }
   ]
 
@@ -344,8 +363,8 @@ export function generateRecoveryPlans(itinerary, impactAnalysis, tripPreferences
     badge: "Maximum Relaxation",
     title: "Protect Journey & Rest",
     subtitle: "Drop strenuous afternoon activity, prioritize villa rest, and maximize savings.",
-    description: "Removes afternoon dive fatigue. Check in with zero rush, enjoy the resort pool, and keep full energy for dinner and Day 2.",
-    experiencesPreserved: "4 of 5 activities",
+    description: `Removes afternoon travel fatigue in ${destName}. Check in with zero rush, enjoy the resort, and keep full energy for dinner and Day 2.`,
+    experiencesPreserved: `${Math.max(1, (origExperiences.length || 2) - 1)} of ${origExperiences.length || 2} activities`,
     flexibilityImpact: "+90 min flexibility buffer",
     flexibilityDelta: 90,
     costImpact: `₹${origExpCost.toLocaleString('en-IN')} saved`,

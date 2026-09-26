@@ -1,4 +1,4 @@
-import { goaExperiences } from '@/data/experiences'
+import { goaExperiences, getExperiencesByDestination, allExperiences } from '@/data/experiences'
 import { getRecommendations } from '@/services/recommendationEngine'
 
 /**
@@ -468,52 +468,56 @@ export function generateDemoIntelligenceResponse(userMessage, context) {
     }
   }
 
+  const currentDest = tripPreferences?.destination?.city || tripPreferences?.destination?.name || "Goa"
+  const currentDestExperiences = getExperiencesByDestination(currentDest)
+
   // 1. "Make Day 2 more relaxed" / Pacing queries
   if (query.includes("relax") || query.includes("hectic") || query.includes("day 2") || query.includes("pacing") || query.includes("slow down")) {
     const day2 = itineraryDays.find(d => d.day === 2) || itineraryDays[1]
     const currentHighIntensity = day2?.items?.find(i => i.intensity === "high" && i.type === "experience")
-    const removeId = currentHighIntensity ? currentHighIntensity.id : "goa-scuba-grand-island"
-    const replacementExp = goaExperiences.find(e => e.id === "goa-fontainhas-heritage-walk") || goaExperiences[1]
+    const removeId = currentHighIntensity ? currentHighIntensity.id : (currentDestExperiences[0]?.id || "exp-1")
+    const replacementExp = currentDestExperiences.find(e => e.intensity === "low" || e.pace === "moderate") || currentDestExperiences[1] || currentDestExperiences[0]
 
     return {
       intent: "MODIFY_ITINERARY",
-      message: `I analyzed Day 2 and found an opportunity to balance high-energy sports with recovery downtime.\n\n` +
+      message: `I analyzed Day 2 in ${currentDest} and found an opportunity to balance high-energy activities with recovery downtime.\n\n` +
         `**Proposed Adjustment for Day 2:**\n` +
-        `• **Replace:** ${currentHighIntensity?.title || 'Scuba Dive Exploration'} *(High intensity)*\n` +
-        `• **With:** Fontainhas Latin Quarter Heritage Walk *(Gentle cultural pace)*\n\n` +
+        `• **Replace:** ${currentHighIntensity?.title || 'High Intensity Activity'} *(High intensity)*\n` +
+        `• **With:** ${replacementExp?.title || 'Cultural Exploration'} *(Gentle cultural pace)*\n\n` +
         `**Why this works:**\n` +
         `• Reduces physical intensity while still matching your cultural interests\n` +
-        `• Saves approximately ₹1,200 in activity spend\n` +
-        `• Adds a +45 minute afternoon relaxation buffer at your villa poolside`,
+        `• Keeps spending balanced within your planned budget\n` +
+        `• Adds a +45 minute afternoon relaxation buffer at your hotel`,
       actions: [
         {
           type: "REPLACE_EXPERIENCE",
           day: 2,
-          removeExperienceId: "goa-scuba-grand-island",
-          addExperienceId: "goa-fontainhas-heritage-walk",
+          removeExperienceId: removeId,
+          addExperienceId: replacementExp?.id || "replacement",
           estimatedSavings: 1200,
           flexibilityGained: "+45 min"
         }
       ],
-      highlights: ["Pacing rebalanced", "₹1,200 estimated saving", "+45 min buffer"]
+      highlights: ["Pacing rebalanced", "Budget protected", "+45 min buffer"]
     }
   }
 
   // 2. "Find more local food" / "Food recommendations"
   if (query.includes("food") || query.includes("culinary") || query.includes("dining") || query.includes("eat") || query.includes("restaurant") || query.includes("taste")) {
-    const foodRecommendations = goaExperiences.filter(e => 
+    const foodRecommendations = currentDestExperiences.filter(e => 
       e.category === "Food" || e.tags.includes("food")
     ).slice(0, 3)
 
+    const listText = foodRecommendations.length > 0 
+      ? foodRecommendations.map((f, i) => `${i + 1}. **${f.title}** — ${f.description.slice(0, 95)}...`).join('\n')
+      : `1. **${currentDest} Traditional Tasting Tour**\n2. **Historic Quarter Food Walk**`
+
     return {
       intent: "ADD_EXPERIENCE",
-      message: `I screened our curated Goa inventory against your current budget and schedule. Here are 3 authentic culinary experiences matching your profile:\n\n` +
-        `1. **${foodRecommendations[0].title}** — ${foodRecommendations[0].description.slice(0, 95)}...\n` +
-        `2. **${foodRecommendations[1].title}** — ${foodRecommendations[1].description.slice(0, 95)}...\n` +
-        `3. **${foodRecommendations[2].title}** — ${foodRecommendations[2].description.slice(0, 95)}...`,
+      message: `I screened our curated ${currentDest} inventory against your current budget and schedule. Here are authentic culinary experiences matching your profile:\n\n${listText}`,
       recommendedExperiences: foodRecommendations,
       recommendedExperienceIds: foodRecommendations.map(e => e.id),
-      highlights: ["3 authentic food stops found", "Sommelier tastings & cooking masterclass"]
+      highlights: [`${foodRecommendations.length || 2} authentic food stops found`, "Local regional cuisine masterclass"]
     }
   }
 
@@ -534,32 +538,32 @@ export function generateDemoIntelligenceResponse(userMessage, context) {
   if (query.includes("flexib") || query.includes("depend") || query.includes("delay") || query.includes("fixed") || query.includes("change")) {
     return {
       intent: "SHOW_FLEXIBILITY",
-      message: `Your journey currently has **${flexibility.percentage || 78}% Journey Flexibility** with **${flexibility.bufferFormatted || '2h 15m'} of buffer windows** across 4 days.\n\n` +
+      message: `Your journey currently has **${flexibility.percentage || 78}% Journey Flexibility** with **${flexibility.bufferFormatted || '2h 15m'} of buffer windows** across ${itineraryDays.length || 4} days in ${currentDest}.\n\n` +
         `**🟢 High Flexibility (Can shift easily):**\n` +
-        `• Latin Quarter walking tour & photography stops\n` +
-        `• Afternoon pool & beach downtime blocks\n` +
+        `• Heritage walking tours & sightseeing stops\n` +
+        `• Afternoon pool & downtime blocks\n` +
         `• Evening culinary dinner reservations\n\n` +
         `**🔴 Fixed / Critical Nodes (Guarded by TripSaathi):**\n` +
         `• Inbound & Outbound flight schedules\n` +
         `• Airport pickup cab driver dispatch\n` +
-        `• Villa check-in & check-out time slots`,
+        `• Hotel check-in & check-out time slots`,
       highlights: [`${flexibility.percentage || 78}% Overall Flexibility`, `${flexibility.bufferFormatted || '2h 15m'} buffer time`]
     }
   }
 
-  // 5. "Remove scuba diving" / General experience removal
+  // 5. "Remove experience" / General experience removal
   if (query.includes("remove") || query.includes("delete")) {
-    const scuba = goaExperiences.find(e => e.id === "goa-scuba-grand-island")
+    const firstExp = currentDestExperiences[0]
     return {
       intent: "REMOVE_EXPERIENCE",
-      message: `I can remove the high-intensity scuba experience from your journey. This will free up approximately 4 hours on Day 2 and save ₹5,600 for 2 travelers.`,
+      message: `I can remove ${firstExp ? firstExp.title : "this experience"} from your journey. This will free up time and save budget for your travel party.`,
       actions: [
         {
           type: "REMOVE_EXPERIENCE",
-          experienceId: "goa-scuba-grand-island"
+          experienceId: firstExp ? firstExp.id : "exp-1"
         }
       ],
-      highlights: ["Freed 4-hour morning slot", "Saves ₹5,600"]
+      highlights: ["Freed schedule slot", "Budget saved"]
     }
   }
 

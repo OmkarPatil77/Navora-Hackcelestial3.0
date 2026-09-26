@@ -1,4 +1,4 @@
-import { goaExperiences } from '@/data/experiences'
+import { goaExperiences, getExperiencesByDestination, allExperiences } from '@/data/experiences'
 import { getMemoryScoreAdjustment } from './journeyMemoryEngine'
 
 /**
@@ -139,19 +139,11 @@ export function scoreExperience(experience, preferences, journeyMemory = null) {
 /**
  * Returns ranked recommendations for the given preferences and optional active filters.
  */
-export function getRecommendations(preferences, filters = {}) {
-  const dest = preferences?.destination?.city?.toLowerCase() || preferences?.destination?.name?.toLowerCase() || "goa"
-  
-  // Graceful check for supported destinations in demo
-  if (!dest.includes("goa")) {
-    return {
-      isSupportedDestination: false,
-      destinationName: preferences?.destination?.name || "Selected Destination",
-      experiences: []
-    }
-  }
+export function getRecommendations(preferences, filters = {}, journeyMemory = null) {
+  const destName = preferences?.destination?.city || preferences?.destination?.name || "Goa"
+  const rawExperiences = getExperiencesByDestination(destName)
 
-  let candidates = goaExperiences.map(exp => scoreExperience(exp, preferences))
+  let candidates = rawExperiences.map(exp => scoreExperience(exp, preferences, journeyMemory))
 
   // Apply Category Filter
   if (filters.category && filters.category !== "All") {
@@ -195,7 +187,7 @@ export function getRecommendations(preferences, filters = {}) {
 
   return {
     isSupportedDestination: true,
-    destinationName: "Goa, India",
+    destinationName: preferences?.destination?.name || preferences?.destination?.city || "Goa, India",
     experiences: candidates
   }
 }

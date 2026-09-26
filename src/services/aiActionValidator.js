@@ -1,4 +1,4 @@
-import { goaExperiences } from '@/data/experiences'
+import { allExperiences } from '@/data/experiences'
 
 /**
  * Validates AI-proposed actions against the current trip state and inventory rules
@@ -16,7 +16,6 @@ export function validateAiAction(action, currentContext) {
   } = currentContext
 
   const daysCount = tripPreferences.duration?.days || 4
-  const allExperiences = goaExperiences
 
   switch (action.type) {
     case 'REPLACE_EXPERIENCE': {

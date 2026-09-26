@@ -2,8 +2,7 @@ import React, { createContext, useContext, useState, useEffect } from 'react'
 import { defaultTripPreferences } from '@/data/mockData'
 import { generateItinerary, regenerateDay, calculateItinerarySummary, calculateFlexibilityScore } from '@/services/itineraryEngine'
 import { createSyntheticFlightDisruption, analyzeDisruption } from '@/services/disruptionEngine'
-import { generateRecoveryPlans, applyRecoveryPlanToItinerary } from '@/services/recoveryEngine'
-import { goaExperiences } from '@/data/experiences'
+import { goaExperiences, getExperiencesByDestination, allExperiences } from '@/data/experiences'
 import { initialVendors, initialAttentionItems, initialOperatorTours } from '@/data/operatorData'
 import { calculateJourneyHealth } from '@/services/journeyHealthEngine'
 import { createInitialJourneyMemory, recordMemoryEvent, MEMORY_STORAGE_KEY } from '@/services/journeyMemoryEngine'
@@ -249,6 +248,23 @@ export const TripPlanningProvider = ({ children }) => {
 
   // Set destination
   const setDestination = (destinationData) => {
+    const destQuery = destinationData.city || destinationData.name || "Goa"
+    const newDestExperiences = getExperiencesByDestination(destQuery)
+    const adultCount = Math.max(1, tripPreferences.travelers?.adults || 2)
+
+    // Automatically select top authentic experiences matching the new destination
+    const newSelected = newDestExperiences.slice(0, 4).map(exp => ({
+      experienceId: exp.id,
+      quantity: adultCount,
+      estimatedCost: exp.pricePerPerson * adultCount
+    }))
+    setSelectedExperiences(newSelected)
+    try {
+      localStorage.setItem(SELECTED_EXP_KEY, JSON.stringify(newSelected))
+    } catch (e) {
+      console.warn("Could not save new selected experiences", e)
+    }
+
     setTripPreferences(prev => {
       const updated = {
         ...prev,
@@ -258,7 +274,7 @@ export const TripPlanningProvider = ({ children }) => {
         }
       }
       // Re-generate fresh itinerary when destination updates
-      const newItin = generateItinerary(updated, selectedExperiences)
+      const newItin = generateItinerary(updated, newSelected)
       setItinerary(newItin)
       return updated
     })
