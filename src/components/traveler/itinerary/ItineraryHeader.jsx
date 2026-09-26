@@ -19,11 +19,11 @@ export const ItineraryHeader = ({
       <div className="space-y-1.5">
         <button
           type="button"
-          onClick={() => navigate('/trip')}
+          onClick={() => navigate('/plan')}
           className="inline-flex items-center gap-1.5 text-xs font-semibold text-charcoal-600 hover:text-terracotta-600 transition-colors group mb-1"
         >
           <ArrowLeft className="w-3.5 h-3.5 group-hover:-translate-x-0.5 transition-transform" />
-          <span>← My Trips</span>
+          <span>← Plan Trip</span>
         </button>
 
         <h1 className="text-2xl sm:text-3xl lg:text-4xl font-serif font-bold text-charcoal-950 tracking-tight">

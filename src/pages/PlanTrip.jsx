@@ -102,7 +102,7 @@ export const PlanTrip = () => {
   return (
     <PageTransition>
       <div className="py-8 md:py-14 bg-sand-50/50 min-h-[calc(100vh-4rem)]">
-      <div className="mx-auto max-w-4xl px-4 sm:px-6 lg:px-8 space-y-8">
+      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 space-y-8">
         
         {/* Top Header Row with Reset Action */}
         <div className="flex items-center justify-between">

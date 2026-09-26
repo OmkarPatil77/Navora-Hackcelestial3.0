@@ -7,6 +7,7 @@ import {
   ShieldCheck, Edit3, RefreshCw, Plus, Layers, Zap, Info, X 
 } from 'lucide-react'
 import { useTripPlan } from '@/context/TripPlanningContext'
+import { generateItinerary } from '@/services/itineraryEngine'
 import { formatCurrency } from '@/lib/utils'
 import PageTransition from '@/components/motion/PageTransition'
 import { Button } from '@/components/ui/Button'
@@ -35,6 +36,7 @@ export const Itinerary = () => {
     selectedExperiences,
     itinerary,
     setItinerary,
+    setDestination,
     regenerateSingleDay,
     updateItineraryItemTime,
     removeItineraryItem,
@@ -76,8 +78,10 @@ export const Itinerary = () => {
   const daysCount = tripPreferences?.duration?.days || 5
   const travelersCount = tripPreferences?.travelers?.total || 2
 
-  // Fallback days & items if itinerary is loading
-  const daysList = itinerary?.days || [
+  // Dynamic days list based on selected destination and staged experiences
+  const daysList = (itinerary?.days && itinerary.days.length > 0)
+    ? itinerary.days
+    : generateItinerary(tripPreferences, selectedExperiences)?.days || [
     {
       day: 1,
       title: "Arrival & Coastal Exploration",
@@ -453,6 +457,212 @@ export const Itinerary = () => {
       title: "✓ Schedule Preserved",
       message: "Activity scheduled for 4:00 PM. Dinner remains at 5:30 PM."
     })
+  }
+
+  // ==============================================================
+  // UNBOOKED / NO TRIP PLANNED FALLBACK VIEW
+  // ==============================================================
+  if (!isTripBooked) {
+    const supportedCities = [
+      {
+        id: "goa",
+        name: "Goa, India",
+        city: "Goa",
+        country: "India",
+        tagline: "Sun-drenched coastlines, heritage Latin quarters, and vibrant seafood.",
+        image: "https://images.unsplash.com/photo-1512343879784-a960bf40e7f2?auto=format&fit=crop&w=1200&q=80",
+        vibes: ["Coastal", "Heritage", "Water Sports"],
+        budget: 35000,
+        days: 4
+      },
+      {
+        id: "jaipur",
+        name: "Jaipur, Rajasthan",
+        city: "Jaipur",
+        country: "India",
+        tagline: "Regal palaces, timeless hill forts, and vibrant artisan bazaars.",
+        image: "https://images.unsplash.com/photo-1599661046289-e31897846e41?auto=format&fit=crop&w=1200&q=80",
+        vibes: ["Royal Forts", "Bazaars", "Culinary"],
+        budget: 42000,
+        days: 4
+      },
+      {
+        id: "kerala",
+        name: "Munnar & Alleppey, Kerala",
+        city: "Kerala",
+        country: "India",
+        tagline: "Emerald tea plantations, tranquil backwaters, and Ayurvedic calm.",
+        image: "https://images.unsplash.com/photo-1602216056096-3b40cc0c9944?auto=format&fit=crop&w=1200&q=80",
+        vibes: ["Backwaters", "Tea Hills", "Wellness"],
+        budget: 48000,
+        days: 5
+      },
+      {
+        id: "dubai",
+        name: "Dubai, United Arab Emirates",
+        city: "Dubai",
+        country: "UAE",
+        tagline: "Futuristic architecture, desert safaris, and luxury waterfronts.",
+        image: "https://images.unsplash.com/photo-1512453979798-5ea266f8880c?auto=format&fit=crop&w=1200&q=80",
+        vibes: ["Luxury", "Skyline", "Desert Safari"],
+        budget: 95000,
+        days: 5
+      },
+      {
+        id: "singapore",
+        name: "Singapore",
+        city: "Singapore",
+        country: "Singapore",
+        tagline: "Garden city marvels, world-class hawker culture, and urban serenity.",
+        image: "https://images.unsplash.com/photo-1525625293386-3f8f99389edd?auto=format&fit=crop&w=1200&q=80",
+        vibes: ["Urban Nature", "Hawker Food", "Futuristic"],
+        budget: 110000,
+        days: 4
+      }
+    ]
+
+    const handleQuickSelectCity = (c) => {
+      setDestination({
+        id: c.id,
+        name: c.name,
+        city: c.city,
+        country: c.country,
+        image: c.image
+      })
+      bookTrip()
+    }
+
+    return (
+      <PageTransition>
+        <div className="py-10 md:py-14 bg-sand-50/50 min-h-[calc(100vh-4rem)]">
+          <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 space-y-8">
+            
+            {/* Top Banner Alert */}
+            <div className="p-6 sm:p-8 rounded-3xl bg-gradient-to-br from-amber-500/10 via-sand-100 to-white border-2 border-amber-300 shadow-soft-sm relative overflow-hidden">
+              <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-6 relative z-10">
+                <div className="flex items-start gap-4">
+                  <div className="w-14 h-14 p-3 rounded-2xl bg-amber-500 text-white flex items-center justify-center shrink-0 shadow-warm-coral">
+                    <Calendar className="w-7 h-7" />
+                  </div>
+                  <div className="space-y-1.5">
+                    <span className="inline-flex items-center gap-1.5 px-3 py-0.5 rounded-full bg-amber-100 text-amber-900 font-bold text-[11px] uppercase tracking-wider border border-amber-300">
+                      <AlertTriangle className="w-3.5 h-3.5 text-amber-700" />
+                      Trip Plan Required
+                    </span>
+                    <h2 className="text-2xl sm:text-3xl font-serif font-bold text-navy-900 tracking-tight">
+                      Create Your Plan to Form Your Itinerary
+                    </h2>
+                    <p className="text-xs sm:text-sm text-[#5E6282] max-w-2xl leading-relaxed">
+                      You haven't selected a destination or booked a trip yet! Select one of our supported cities below or create a custom plan to generate your live, AI-optimized day-by-day itinerary.
+                    </p>
+                  </div>
+                </div>
+
+                <div className="flex flex-col sm:flex-row gap-3 w-full sm:w-auto shrink-0">
+                  <Button
+                    onClick={() => navigate('/plan')}
+                    className="bg-coral-500 hover:bg-coral-600 text-white font-bold text-xs sm:text-sm px-6 py-3 rounded-xl shadow-warm-coral"
+                    rightIcon={<ArrowRight className="w-4 h-4" />}
+                  >
+                    Create Custom Plan
+                  </Button>
+                  <Button
+                    variant="outline"
+                    onClick={() => navigate('/recommendations')}
+                    className="border-sand-300 text-navy-900 font-semibold text-xs sm:text-sm px-5 py-3 rounded-xl bg-white hover:bg-sand-100"
+                    leftIcon={<Compass className="w-4 h-4 text-coral-500" />}
+                  >
+                    Explore Destinations
+                  </Button>
+                </div>
+              </div>
+            </div>
+
+            {/* Quick-Select Supported Destinations */}
+            <div className="space-y-4">
+              <div className="flex items-center justify-between">
+                <div>
+                  <h3 className="text-xl font-serif font-bold text-navy-900">
+                    Select a Destination to Instant-Generate Itinerary
+                  </h3>
+                  <p className="text-xs text-[#5E6282]">
+                    Click any city below to generate an AI-tailored day-by-day itinerary instantly.
+                  </p>
+                </div>
+                <Badge variant="outline" className="border-coral-300 bg-coral-50 text-coral-800 text-xs font-bold">
+                  5 Active Cities Implemented
+                </Badge>
+              </div>
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
+                {supportedCities.map(c => (
+                  <div
+                    key={c.id}
+                    className="group rounded-2xl bg-white border border-sand-200 overflow-hidden shadow-soft-xs hover:shadow-soft-md transition-all flex flex-col justify-between"
+                  >
+                    <div className="relative h-44 overflow-hidden">
+                      <img
+                        src={c.image}
+                        alt={c.name}
+                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                      />
+                      <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent" />
+                      <div className="absolute top-3 right-3 bg-white/90 backdrop-blur-md px-2.5 py-1 rounded-full text-[11px] font-bold text-navy-900 border border-white/50">
+                        {formatCurrency(c.budget)} • {c.days} Days
+                      </div>
+                      <div className="absolute bottom-3 left-3 right-3 text-white">
+                        <h4 className="text-lg font-serif font-bold">{c.name}</h4>
+                        <p className="text-xs text-sand-200 line-clamp-1">{c.tagline}</p>
+                      </div>
+                    </div>
+
+                    <div className="p-4 space-y-3 flex-1 flex flex-col justify-between">
+                      <div className="flex flex-wrap gap-1.5">
+                        {c.vibes.map(vibe => (
+                          <span
+                            key={vibe}
+                            className="px-2 py-0.5 rounded-md bg-sand-100 text-charcoal-700 font-semibold text-[10px]"
+                          >
+                            {vibe}
+                          </span>
+                        ))}
+                      </div>
+
+                      <div className="pt-2 flex items-center gap-2">
+                        <Button
+                          onClick={() => handleQuickSelectCity(c)}
+                          className="flex-1 bg-navy-900 hover:bg-navy-950 text-white font-bold text-xs py-2.5 rounded-xl shadow-xs"
+                          rightIcon={<Sparkles className="w-3.5 h-3.5 text-amber-300" />}
+                        >
+                          Quick-Build Itinerary
+                        </Button>
+                        <Button
+                          variant="outline"
+                          onClick={() => {
+                            setDestination({
+                              id: c.id,
+                              name: c.name,
+                              city: c.city,
+                              country: c.country,
+                              image: c.image
+                            })
+                            navigate('/plan')
+                          }}
+                          className="border-sand-300 text-navy-900 font-semibold text-xs px-3 py-2.5 rounded-xl hover:bg-sand-100"
+                        >
+                          Plan
+                        </Button>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+          </div>
+        </div>
+      </PageTransition>
+    )
   }
 
   return (

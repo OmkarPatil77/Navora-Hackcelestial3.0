@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useState, useEffect } from 'react'
-import { defaultTripPreferences } from '@/data/mockData'
+import { defaultTripPreferences, mockDestinations } from '@/data/mockData'
 import { generateItinerary, regenerateDay, calculateItinerarySummary, calculateFlexibilityScore } from '@/services/itineraryEngine'
 import { createSyntheticFlightDisruption, analyzeDisruption } from '@/services/disruptionEngine'
 import { goaExperiences, getExperiencesByDestination, allExperiences } from '@/data/experiences'
@@ -268,7 +268,35 @@ export const TripPlanningProvider = ({ children }) => {
 
   // Set destination
   const setDestination = (destinationData) => {
-    const destQuery = destinationData.city || destinationData.name || "Goa"
+    let destObj = {}
+    if (typeof destinationData === 'string') {
+      const found = mockDestinations.find(d => 
+        d.id.toLowerCase() === destinationData.toLowerCase() ||
+        d.city.toLowerCase() === destinationData.toLowerCase() ||
+        d.name.toLowerCase().includes(destinationData.toLowerCase())
+      )
+      if (found) {
+        destObj = { ...found }
+      } else {
+        destObj = {
+          id: destinationData.toLowerCase().replace(/\s+/g, '-'),
+          name: destinationData,
+          city: destinationData.split(',')[0].trim(),
+          country: 'India',
+          region: 'India'
+        }
+      }
+    } else if (destinationData && typeof destinationData === 'object') {
+      // Find matching mock destination if needed
+      const match = mockDestinations.find(d => 
+        d.id === destinationData.id || 
+        (destinationData.city && d.city.toLowerCase() === destinationData.city.toLowerCase()) ||
+        (destinationData.name && d.name.toLowerCase() === destinationData.name.toLowerCase())
+      )
+      destObj = { ...(match || {}), ...destinationData }
+    }
+
+    const destQuery = destObj.city || destObj.name || "Goa"
     const newDestExperiences = getExperiencesByDestination(destQuery)
     const adultCount = Math.max(1, tripPreferences.travelers?.adults || 2)
 
@@ -288,14 +316,16 @@ export const TripPlanningProvider = ({ children }) => {
     setTripPreferences(prev => {
       const updated = {
         ...prev,
-        destination: {
-          ...prev.destination,
-          ...destinationData
-        }
+        destination: destObj
       }
       // Re-generate fresh itinerary when destination updates
       const newItin = generateItinerary(updated, newSelected)
       setItinerary(newItin)
+      try {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(updated))
+      } catch (e) {
+        console.warn("Could not save trip preferences", e)
+      }
       return updated
     })
   }

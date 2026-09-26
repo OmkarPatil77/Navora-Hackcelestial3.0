@@ -18,10 +18,9 @@ export const Navbar = () => {
 
   // Links for travelers
   const travelerNavLinks = [
-    { label: "Explore", href: "/recommendations", icon: Compass },
     { label: "Plan", href: "/plan", icon: PlusCircle },
+    { label: "Explore", href: "/recommendations", icon: Compass },
     { label: "Itinerary", href: "/itinerary", icon: Calendar },
-    { label: "Live Trip", href: "/trip", icon: MapPin, badge: "Active" },
   ]
 
   const isActive = (path) => {

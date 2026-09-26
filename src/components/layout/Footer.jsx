@@ -41,17 +41,12 @@ export const Footer = () => {
                 </li>
                 <li>
                   <Link to="/recommendations" className="text-charcoal-600 hover:text-terracotta-600 transition-colors">
-                    AI Recommendations
+                    Explore Experiences
                   </Link>
                 </li>
                 <li>
                   <Link to="/itinerary" className="text-charcoal-600 hover:text-terracotta-600 transition-colors">
                     Dynamic Itinerary
-                  </Link>
-                </li>
-                <li>
-                  <Link to="/trip" className="text-charcoal-600 hover:text-terracotta-600 transition-colors">
-                    Live Trip View
                   </Link>
                 </li>
               </ul>
