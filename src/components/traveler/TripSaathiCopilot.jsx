@@ -201,33 +201,38 @@ export const TripSaathiCopilot = () => {
     }
   }
 
+  // Do not render floating assistant widget on landing page to maintain clean, human editorial aesthetic
+  if (location.pathname === '/') {
+    return null
+  }
+
   return (
     <>
-      {/* Floating Copilot Toggle Trigger in Bottom Right */}
+      {/* Floating Concierge Toggle Trigger in Bottom Right */}
       <div className="fixed bottom-6 right-6 z-40">
         <motion.button
           type="button"
           whileHover={{ y: -1 }}
           whileTap={{ scale: 0.98 }}
           onClick={() => setIsOpen(!isOpen)}
-          className="flex items-center gap-2.5 px-4 py-2.5 rounded-full bg-charcoal-900 text-white border border-charcoal-700 shadow-soft-md hover:bg-charcoal-950 transition-all select-none group"
+          className="flex items-center gap-2.5 px-4 py-2.5 rounded-full bg-navy-900 text-white border border-navy-800 shadow-soft-md hover:bg-navy-950 transition-all select-none group"
         >
-          <div className="flex h-6 w-6 items-center justify-center rounded-full bg-terracotta-600 text-white">
+          <div className="flex h-6 w-6 items-center justify-center rounded-full bg-coral-500 text-white">
             <MessageSquare className="w-3.5 h-3.5" />
           </div>
 
           <div className="text-left hidden sm:block">
-            <span className="font-sans font-semibold text-xs block leading-tight">Ask TripSaathi</span>
+            <span className="font-sans font-semibold text-xs block leading-tight">Trip Concierge</span>
             <span className="text-[10px] text-sand-300 block">
-              Trip Assistant
+              24/7 Journey Support
             </span>
           </div>
 
-          {isOpen && <X className="w-4 h-4 ml-1 text-charcoal-400 group-hover:text-white" />}
+          {isOpen && <X className="w-4 h-4 ml-1 text-sand-400 group-hover:text-white" />}
         </motion.button>
       </div>
 
-      {/* Slide-out Copilot Assistant Drawer */}
+      {/* Slide-out Concierge Assistant Drawer */}
       <AnimatePresence>
         {isOpen && (
           <motion.div
@@ -235,22 +240,22 @@ export const TripSaathiCopilot = () => {
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: 20, scale: 0.96 }}
             transition={{ duration: 0.2 }}
-            className="fixed bottom-20 right-4 sm:right-6 z-50 w-[calc(100vw-2rem)] sm:w-[420px] max-h-[600px] h-[560px] rounded-2xl bg-white border border-sand-200/90 shadow-soft-xl flex flex-col overflow-hidden"
+            className="fixed bottom-20 right-4 sm:right-6 z-50 w-[calc(100vw-2rem)] sm:w-[420px] max-h-[600px] h-[560px] rounded-3xl bg-white border border-sand-200/90 shadow-2xl flex flex-col overflow-hidden"
           >
-            {/* Copilot Header */}
-            <div className="p-4 bg-charcoal-950 text-white flex items-center justify-between border-b border-charcoal-800">
+            {/* Concierge Header */}
+            <div className="p-4 bg-navy-900 text-white flex items-center justify-between border-b border-navy-800">
               <div className="flex items-center gap-2.5">
-                <div className="w-8 h-8 rounded-xl bg-terracotta-600 text-white flex items-center justify-center shadow-xs">
-                  <Sparkles className="w-4 h-4" />
+                <div className="w-8 h-8 rounded-xl bg-coral-500 text-white flex items-center justify-center shadow-xs">
+                  <Compass className="w-4 h-4" />
                 </div>
                 <div>
                   <div className="flex items-center gap-1.5">
-                    <h3 className="font-serif font-bold text-sm text-white">TripSaathi AI</h3>
-                    <Badge variant="dark" size="sm" className="text-[9px] py-0 px-1.5 text-terracotta-400 border-charcoal-700">
-                      {isAiActive ? "Gemini 1.5" : "Demo Intelligence"}
+                    <h3 className="font-serif font-bold text-sm text-white">Trip Concierge</h3>
+                    <Badge variant="dark" size="sm" className="text-[9px] py-0 px-1.5 text-honey-400 border-navy-700">
+                      Live Assistant
                     </Badge>
                   </div>
-                  <p className="text-[10px] text-charcoal-300">
+                  <p className="text-[10px] text-navy-300">
                     Your journey, understood.
                   </p>
                 </div>

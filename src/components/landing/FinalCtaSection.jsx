@@ -1,68 +1,77 @@
 import React from 'react'
 import { useNavigate } from 'react-router-dom'
 import { motion } from 'framer-motion'
-import { ArrowRight, Sparkles, MapPin, Compass } from 'lucide-react'
+import { ArrowRight, Compass, MapPin, Heart } from 'lucide-react'
 import { Button } from '@/components/ui/Button'
 
 export const FinalCtaSection = () => {
   const navigate = useNavigate()
 
   return (
-    <section className="py-20 md:py-28 relative overflow-hidden bg-charcoal-950 text-white">
-      {/* Editorial background image with deep gradient */}
-      <div className="absolute inset-0 z-0">
-        <img
-          src="https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=1600&q=80"
-          alt="Coastal Horizon"
-          className="w-full h-full object-cover object-center opacity-25 filter grayscale"
-        />
-        <div className="absolute inset-0 bg-gradient-to-t from-charcoal-950 via-charcoal-950/90 to-charcoal-950/70" />
-      </div>
+    <section className="py-20 md:py-28 relative overflow-hidden bg-[#FAF6F0] border-t border-[#F1ECE1]">
+      <div className="mx-auto max-w-5xl px-4 sm:px-6 lg:px-8 relative z-10 text-center">
+        
+        {/* Playful Floating Paper Airplane */}
+        <motion.div
+          animate={{ y: [0, -8, 0], rotate: [0, 4, 0] }}
+          transition={{ repeat: Infinity, duration: 5, ease: "easeInOut" }}
+          className="mx-auto w-14 h-14 rounded-2xl bg-coral-50 border border-coral-200/80 flex items-center justify-center text-coral-500 shadow-soft-sm mb-6"
+        >
+          <svg className="w-7 h-7 transform -rotate-12" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/>
+          </svg>
+        </motion.div>
 
-      <div className="relative z-10 mx-auto max-w-5xl px-4 sm:px-6 lg:px-8 text-center space-y-6">
-        <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-charcoal-800 border border-charcoal-700 text-terracotta-400 text-xs font-semibold">
-          <Sparkles className="w-3.5 h-3.5" />
-          <span>Experience the next evolution of travel planning</span>
+        <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-white border border-[#EFEAE0] text-coral-600 text-xs font-bold uppercase tracking-wider shadow-soft-xs mb-4">
+          <Compass className="w-3.5 h-3.5" />
+          <span>Spontaneous Travel, Reimagined</span>
         </div>
 
-        <h2 className="text-3xl sm:text-5xl lg:text-6xl font-bold tracking-tight font-serif text-sand-50">
-          Ready to build your journey?
+        <h2 className="text-3xl sm:text-5xl lg:text-6xl font-bold tracking-tight font-serif text-navy-900 leading-[1.15]">
+          Ready to experience a journey <br />
+          <span className="text-coral-500 italic font-normal">that breathes with you?</span>
         </h2>
 
-        <p className="text-sm sm:text-base text-charcoal-300 max-w-xl mx-auto leading-relaxed">
-          Tell us where you want to go, set your budget, and let TripSaathi craft a resilient itinerary that adapts to every moment.
+        <p className="mt-5 text-base sm:text-lg text-[#5E6282] max-w-xl mx-auto leading-relaxed">
+          Tell us where you want to go, set your budget, and let TripSaathi craft a resilient itinerary that adapts to every unpredictable moment.
         </p>
 
-        <div className="flex flex-col sm:flex-row items-center justify-center gap-3 pt-4">
-          <Button
-            size="lg"
+        {/* CTA Buttons */}
+        <div className="flex flex-col sm:flex-row items-center justify-center gap-4 pt-8">
+          <motion.button
+            whileHover={{ scale: 1.04, y: -2 }}
+            whileTap={{ scale: 0.96 }}
             onClick={() => navigate('/plan')}
-            className="w-full sm:w-auto bg-terracotta-600 hover:bg-terracotta-700 text-white shadow-soft-lg px-8"
-            rightIcon={<ArrowRight className="w-4 h-4" />}
+            className="w-full sm:w-auto bg-honey-500 hover:bg-honey-600 text-navy-950 font-bold text-base px-9 py-4 rounded-2xl shadow-warm-honey transition-all flex items-center justify-center gap-2.5"
           >
-            Start Planning
-          </Button>
+            <span>Plan My Trip Now</span>
+            <ArrowRight className="w-4 h-4 text-navy-950" />
+          </motion.button>
 
-          <Button
-            size="lg"
-            variant="outline"
+          <motion.button
+            whileHover={{ scale: 1.02 }}
+            whileTap={{ scale: 0.98 }}
             onClick={() => navigate('/trip')}
-            className="w-full sm:w-auto bg-charcoal-900/90 text-sand-200 border-charcoal-700 hover:bg-charcoal-800"
-            leftIcon={<Compass className="w-4 h-4 text-terracotta-400" />}
+            className="w-full sm:w-auto bg-white hover:bg-[#FAF7F2] text-navy-900 border border-[#EFEAE0] font-bold text-base px-8 py-4 rounded-2xl shadow-soft-xs transition-all flex items-center justify-center gap-2"
           >
-            View Live Demo Trip
-          </Button>
+            <Compass className="w-4 h-4 text-coral-500" />
+            <span>View Live Demo Trip</span>
+          </motion.button>
         </div>
 
-        <div className="pt-8 flex items-center justify-center gap-6 text-xs text-charcoal-400">
-          <span className="flex items-center gap-1.5">
-            <MapPin className="w-3.5 h-3.5 text-terracotta-500" />
+        <div className="pt-10 flex flex-wrap items-center justify-center gap-6 text-xs text-[#5E6282]">
+          <span className="flex items-center gap-1.5 font-medium">
+            <MapPin className="w-4 h-4 text-coral-500" />
             Goa • Rajasthan • Kerala & beyond
           </span>
-          <span>•</span>
-          <span>Zero setup friction</span>
+          <span className="hidden sm:inline">•</span>
+          <span className="font-handwriting text-base text-coral-600 font-bold">
+            Zero setup friction ~ Free to start
+          </span>
         </div>
+
       </div>
     </section>
   )
 }
+export default FinalCtaSection

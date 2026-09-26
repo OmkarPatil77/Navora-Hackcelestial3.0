@@ -1,163 +1,293 @@
-import React from 'react'
+import React, { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { motion } from 'framer-motion'
-import { Sparkles, ArrowRight, Compass, Shield, CheckCircle, RefreshCw, Clock } from 'lucide-react'
-import { Button } from '@/components/ui/Button'
-import { Badge } from '@/components/ui/Badge'
+import { Play, ArrowRight, Compass, Clock, CheckCircle2, ShieldCheck, Heart } from 'lucide-react'
+import { LiveAdaptationModal } from './LiveAdaptationModal'
 
 export const HeroSection = () => {
   const navigate = useNavigate()
+  const [demoOpen, setDemoOpen] = useState(false)
 
   return (
-    <section className="relative overflow-hidden pt-10 pb-16 md:pt-16 md:pb-24 lg:pt-20 lg:pb-32 bg-gradient-to-b from-sand-50 via-background to-sand-100/40">
+    <section className="relative overflow-hidden pt-8 pb-16 md:pt-14 md:pb-24 lg:pt-16 lg:pb-28 bg-[#FFFDF9]">
       
-      {/* Subtle background ambient mesh */}
-      <div className="absolute inset-0 bg-subtle-grid opacity-60 pointer-events-none" />
-      <div className="absolute top-0 right-1/4 -z-10 h-96 w-96 rounded-full bg-terracotta-100/40 blur-3xl pointer-events-none" />
-      <div className="absolute bottom-10 left-10 -z-10 h-80 w-80 rounded-full bg-sand-300/30 blur-3xl pointer-events-none" />
+      {/* Background soft ambient warm aura */}
+      <div className="absolute top-0 right-0 -z-10 w-[620px] h-[620px] rounded-full bg-gradient-to-b from-[#FFF1DA]/90 via-[#FFE7C4]/50 to-transparent blur-3xl pointer-events-none transform translate-x-1/4 -translate-y-1/4" />
+      <div className="absolute bottom-0 left-0 -z-10 w-[380px] h-[380px] rounded-full bg-coral-50/50 blur-3xl pointer-events-none" />
 
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 relative z-10">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-8 items-center">
           
-          {/* Left Column: Editorial Value Proposition */}
+          {/* LEFT COLUMN: Editorial Typography & Human Value Proposition */}
           <motion.div 
-            initial={{ opacity: 0, y: 18 }}
+            initial={{ opacity: 0, y: 24 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5, ease: "easeOut" }}
-            className="lg:col-span-7 space-y-6"
+            transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
+            className="lg:col-span-6 space-y-6 sm:space-y-7 text-left"
           >
-            {/* Pill Header */}
-            <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-sand-100/90 border border-sand-300 text-charcoal-800 text-xs font-semibold shadow-soft-xs">
-              <Compass className="w-3.5 h-3.5 text-terracotta-600" />
-              <span>Dynamic Travel Planning & Operations</span>
-            </div>
-
-            {/* Main Headline */}
-            <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold tracking-tight text-charcoal-950 font-serif leading-[1.12]">
-              Your journey should <br />
-              <span className="italic font-normal text-terracotta-600 underline decoration-terracotta-300 decoration-wavy decoration-1 underline-offset-8">
-                adapt to you.
+            {/* Eyebrow: Matches user reference style */}
+            <motion.div
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5, delay: 0.1 }}
+              className="inline-flex items-center gap-2"
+            >
+              <span className="text-xs sm:text-sm font-bold tracking-wider uppercase text-coral-500 font-sans">
+                Best Destinations Around The World
               </span>
+            </motion.div>
+
+            {/* Main Headline: Warm serif with playful brush underline under "enjoy" */}
+            <h1 className="text-4xl sm:text-5xl lg:text-[62px] font-bold tracking-tight text-navy-900 font-serif leading-[1.12]">
+              Travel,{' '}
+              <span className="relative inline-block whitespace-nowrap">
+                <span className="relative z-10">enjoy</span>
+                {/* Hand-drawn brush highlighter underline accent */}
+                <motion.svg
+                  initial={{ pathLength: 0, opacity: 0 }}
+                  animate={{ pathLength: 1, opacity: 1 }}
+                  transition={{ duration: 0.8, delay: 0.45, ease: "easeOut" }}
+                  className="absolute -bottom-1 sm:-bottom-2 -left-2 w-[112%] h-4 sm:h-5 text-coral-500 -z-0 pointer-events-none"
+                  viewBox="0 0 250 20"
+                  fill="none"
+                  preserveAspectRatio="none"
+                >
+                  <motion.path
+                    d="M3 13C60 4 150 2 245 12C180 18 80 17 20 15"
+                    stroke="#DF6951"
+                    strokeWidth="8"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    initial={{ pathLength: 0 }}
+                    animate={{ pathLength: 1 }}
+                    transition={{ duration: 0.8, delay: 0.4 }}
+                  />
+                </motion.svg>
+              </span>
+              <br />
+              and live a new <br className="hidden sm:inline" />
+              and full life
             </h1>
 
-            {/* Supporting Copy */}
-            <p className="text-base sm:text-lg text-charcoal-700 leading-relaxed max-w-xl font-normal">
-              Build a personalized trip around your interests, budget and travel style — then let TripSaathi adapt it when plans change.
+            {/* Supporting Copy: Thoughtful, airy, human-centered */}
+            <p className="text-base sm:text-lg text-[#5E6282] leading-relaxed max-w-xl font-normal font-sans">
+              Built for genuine spontaneous explorers. TripSaathi crafts your dream itinerary around your pace, taste, and budget — with an intelligent safety net that gracefully adapts whenever flights, weather, or plans shift.
             </p>
 
-            {/* CTAs */}
-            <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3.5 pt-2">
-              <Button
-                size="lg"
+            {/* CTAs: Warm Honey Button + Circular Coral Play Demo Button */}
+            <div className="flex flex-wrap items-center gap-5 sm:gap-7 pt-2">
+              {/* Primary CTA: Warm Honey / Amber button */}
+              <motion.button
+                whileHover={{ scale: 1.04, y: -2 }}
+                whileTap={{ scale: 0.97 }}
                 onClick={() => navigate('/plan')}
-                className="bg-terracotta-600 hover:bg-terracotta-700 text-white shadow-soft-md"
-                rightIcon={<ArrowRight className="w-4 h-4" />}
+                className="bg-honey-500 hover:bg-honey-600 text-navy-950 font-bold text-sm sm:text-base px-7 py-3.5 sm:py-4 rounded-xl shadow-warm-honey transition-all flex items-center gap-2 select-none"
               >
-                Plan My Journey
-              </Button>
-              <Button
-                size="lg"
-                variant="outline"
-                onClick={() => navigate('/recommendations')}
-                className="bg-white/90 text-charcoal-800 border-sand-300 hover:bg-sand-50"
-                leftIcon={<Compass className="w-4 h-4 text-charcoal-600" />}
-              >
-                Explore Experiences
-              </Button>
+                <span>Find out more</span>
+                <ArrowRight className="w-4 h-4 text-navy-950" />
+              </motion.button>
+
+              {/* Secondary CTA: Play Demo with circular coral button */}
+              <div className="flex items-center gap-3 group cursor-pointer" onClick={() => setDemoOpen(true)}>
+                <motion.div
+                  whileHover={{ scale: 1.1 }}
+                  whileTap={{ scale: 0.92 }}
+                  className="relative flex items-center justify-center"
+                >
+                  {/* Pulsing ring aura */}
+                  <span className="absolute w-12 h-12 rounded-full bg-coral-400/25 animate-ping" />
+                  
+                  {/* Play circle */}
+                  <div className="w-12 h-12 rounded-full bg-coral-500 text-white flex items-center justify-center shadow-warm-coral transition-transform group-hover:bg-coral-600 relative z-10">
+                    <Play className="w-4 h-4 fill-white ml-0.5 text-white" />
+                  </div>
+                </motion.div>
+
+                <div className="text-left">
+                  <span className="text-sm font-semibold text-[#5E6282] group-hover:text-navy-900 transition-colors block">
+                    Play Demo
+                  </span>
+                  <span className="text-[11px] text-muted-foreground block">
+                    Live dynamic adaptation
+                  </span>
+                </div>
+              </div>
             </div>
 
-            {/* Trust and Key Capabilities */}
-            <div className="pt-6 border-t border-sand-200/80 grid grid-cols-3 gap-4 text-left">
+            {/* Micro Human-Touch Metrics */}
+            <div className="pt-6 sm:pt-8 border-t border-[#F1ECE1] grid grid-cols-3 gap-3 sm:gap-6 text-left">
               <div>
-                <p className="text-base font-bold text-charcoal-900 font-serif">100%</p>
-                <p className="text-xs text-muted-foreground mt-0.5">Dynamic Rerouting</p>
+                <p className="text-lg sm:text-xl font-bold text-navy-900 font-serif">100%</p>
+                <p className="text-xs text-[#5E6282] mt-0.5">Dynamic Rerouting</p>
               </div>
               <div>
-                <p className="text-base font-bold text-charcoal-900 font-serif">Zero-loss</p>
-                <p className="text-xs text-muted-foreground mt-0.5">Disruption Safety Net</p>
+                <p className="text-lg sm:text-xl font-bold text-navy-900 font-serif">Zero-Stress</p>
+                <p className="text-xs text-[#5E6282] mt-0.5">Disruption Shield</p>
               </div>
               <div>
-                <p className="text-base font-bold text-charcoal-900 font-serif">Dual-engine</p>
-                <p className="text-xs text-muted-foreground mt-0.5">Traveler & Operator</p>
+                <p className="text-lg sm:text-xl font-bold text-navy-900 font-serif">Dual Care</p>
+                <p className="text-xs text-[#5E6282] mt-0.5">Traveler & Local Hosts</p>
               </div>
             </div>
+
           </motion.div>
 
-          {/* Right Column: Editorial Visual Treatment & Live Dynamic Card */}
+          {/* RIGHT COLUMN: Authentic Traveler Visual + Organic Warm Blob + Airplanes */}
           <motion.div
             initial={{ opacity: 0, scale: 0.95, y: 20 }}
             animate={{ opacity: 1, scale: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 0.15, ease: "easeOut" }}
-            className="lg:col-span-5 relative"
+            transition={{ duration: 0.7, delay: 0.2, ease: "easeOut" }}
+            className="lg:col-span-6 relative flex justify-center items-center"
           >
-            {/* Main Visual Frame */}
-            <div className="relative rounded-2xl p-2 bg-gradient-to-b from-sand-200 to-sand-300/40 shadow-soft-xl">
-              <div className="relative rounded-xl overflow-hidden aspect-[4/4.8] sm:aspect-[4/4.5] bg-charcoal-900">
-                <img
-                  src="https://images.unsplash.com/photo-1512343879784-a960bf40e7f2?auto=format&fit=crop&w=1200&q=80"
-                  alt="Goa Coastal Architecture"
-                  className="w-full h-full object-cover object-center transform hover:scale-105 transition-transform duration-700 opacity-90"
-                />
+            {/* The Big Organic Warm Peach/Sand Blob (Matches reference shape aesthetic) */}
+            <div className="absolute w-[92%] sm:w-[500px] h-[92%] sm:h-[500px] bg-[#FFF1DA] rounded-[80px_40px_100px_50px] -z-10 transform rotate-1 transition-all duration-700 pointer-events-none" />
 
-                {/* Subtle dark gradient overlay for text readability */}
-                <div className="absolute inset-0 bg-gradient-to-t from-charcoal-950/80 via-transparent to-black/20" />
+            {/* Hand-drawn accent dots cluster behind */}
+            <div className="absolute -top-4 -right-2 w-28 h-28 opacity-30 pointer-events-none bg-dot-pattern" />
 
-                {/* Top Badge on image */}
-                <div className="absolute top-4 left-4">
-                  <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-black/50 backdrop-blur-md border border-white/20 text-white text-xs font-medium">
-                    <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
-                    <span>Goa Experience • 4D/3N</span>
-                  </div>
+            {/* Flying Paper Airplanes with curved dashed flight contrails */}
+            {/* Airplane 1: Top flying towards right */}
+            <motion.div
+              animate={{ 
+                y: [0, -6, 0],
+                x: [0, 4, 0],
+                rotate: [0, 2, 0]
+              }}
+              transition={{ repeat: Infinity, duration: 4.5, ease: "easeInOut" }}
+              className="absolute -top-4 right-10 sm:right-16 z-20 pointer-events-none"
+            >
+              {/* Airplane SVG */}
+              <div className="relative">
+                <svg className="w-12 h-12 text-[#24A69A] drop-shadow-sm transform -rotate-12" viewBox="0 0 24 24" fill="currentColor">
+                  <path d="M21.42 10.92l-18-9a1 1 0 0 0-1.39 1.13l2.42 7.25a1 1 0 0 0 .7.65L12 12l-6.85 1.05a1 1 0 0 0-.7.65l-2.42 7.25a1 1 0 0 0 1.39 1.13l18-9a1 1 0 0 0 0-1.78z" />
+                </svg>
+                {/* Dashed curved contrail */}
+                <svg className="absolute -left-16 top-6 w-20 h-10 pointer-events-none text-sand-400" fill="none" viewBox="0 0 80 40">
+                  <path d="M75 10 C50 15, 25 35, 5 20" stroke="currentColor" strokeWidth="1.5" strokeDasharray="3 3" />
+                </svg>
+              </div>
+            </motion.div>
+
+            {/* Airplane 2: Lower right flying outwards */}
+            <motion.div
+              animate={{ 
+                y: [0, 7, 0],
+                x: [0, -3, 0],
+                rotate: [0, -3, 0]
+              }}
+              transition={{ repeat: Infinity, duration: 5, ease: "easeInOut", delay: 1 }}
+              className="absolute top-1/2 -right-4 sm:-right-8 z-20 pointer-events-none"
+            >
+              <div className="relative">
+                <svg className="w-10 h-10 text-[#4E71FF] drop-shadow-sm transform rotate-45" viewBox="0 0 24 24" fill="currentColor">
+                  <path d="M21.42 10.92l-18-9a1 1 0 0 0-1.39 1.13l2.42 7.25a1 1 0 0 0 .7.65L12 12l-6.85 1.05a1 1 0 0 0-.7.65l-2.42 7.25a1 1 0 0 0 1.39 1.13l18-9a1 1 0 0 0 0-1.78z" />
+                </svg>
+                <svg className="absolute -left-12 -top-4 w-16 h-12 pointer-events-none text-sand-400" fill="none" viewBox="0 0 60 40">
+                  <path d="M55 35 C40 20, 20 15, 5 30" stroke="currentColor" strokeWidth="1.5" strokeDasharray="3 3" />
+                </svg>
+              </div>
+            </motion.div>
+
+            {/* Main Visual: Happy Traveler Image */}
+            <div className="relative w-full max-w-[440px] sm:max-w-[480px] rounded-3xl overflow-hidden shadow-2xl border-4 border-white bg-white/40">
+              <img
+                src="/images/traveler-hero.jpg"
+                alt="Joyful traveler sitting on luggage ready for a spontaneous journey"
+                className="w-full h-auto object-cover object-top select-none transform hover:scale-102 transition-transform duration-500"
+                loading="eager"
+              />
+
+              {/* Soft vignette at bottom */}
+              <div className="absolute inset-0 bg-gradient-to-t from-navy-950/20 via-transparent to-transparent pointer-events-none" />
+            </div>
+
+            {/* Floating Card 1: Destination & Active Trip Stamp (Top-Left) */}
+            <motion.div
+              initial={{ opacity: 0, x: -20 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.6, delay: 0.35 }}
+              whileHover={{ y: -3 }}
+              className="absolute -top-3 -left-3 sm:-left-6 max-w-[210px] bg-white/95 backdrop-blur-md border border-sand-200 rounded-2xl p-3 shadow-soft-lg z-20"
+            >
+              <div className="flex items-center gap-2.5">
+                <div className="w-9 h-9 rounded-xl bg-amber-50 border border-amber-200 flex items-center justify-center text-amber-700 shrink-0 font-bold text-xs">
+                  GOA
                 </div>
-
-                {/* Bottom Destination Tag */}
-                <div className="absolute bottom-4 left-4 right-4 text-white">
-                  <p className="text-[11px] font-semibold tracking-wider uppercase text-sand-300">Active Destination</p>
-                  <h3 className="text-xl font-bold font-serif">Panjim Latin Quarter & Coastal Trail</h3>
+                <div>
+                  <p className="text-[11px] font-bold text-navy-900 leading-tight">Panjim & Coastal</p>
+                  <p className="text-[10px] text-muted-foreground flex items-center gap-1 mt-0.5">
+                    <span>☀️ 29°C</span>
+                    <span>•</span>
+                    <span className="text-emerald-700 font-semibold">Day 1 Active</span>
+                  </p>
                 </div>
               </div>
+            </motion.div>
 
-              {/* Floating Live AI Adaptation Card (The core visual metaphor) */}
-              <motion.div
-                initial={{ opacity: 0, y: 15 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.5, delay: 0.35 }}
-                className="absolute -bottom-6 -left-4 sm:-left-8 sm:-bottom-8 max-w-[320px] rounded-xl bg-white/95 backdrop-blur-md border border-sand-200/90 p-3.5 shadow-soft-lg"
-              >
-                <div className="flex items-center justify-between pb-2 border-b border-sand-100">
-                  <div className="flex items-center gap-1.5 text-xs font-bold text-charcoal-900">
-                    <Sparkles className="w-3.5 h-3.5 text-terracotta-600" />
-                    <span>TripSaathi Adaptation Engine</span>
-                  </div>
-                  <span className="text-[10px] font-bold px-1.5 py-0.5 rounded bg-amber-100 text-amber-800">
-                    LIVE
-                  </span>
+            {/* Floating Card 2: Live Concierge (Bottom-Left Metaphor) */}
+            <motion.div
+              initial={{ opacity: 0, y: 25 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6, delay: 0.5 }}
+              whileHover={{ y: -3 }}
+              className="absolute -bottom-6 -left-3 sm:-left-8 max-w-[310px] sm:max-w-[330px] rounded-2xl bg-white/95 backdrop-blur-md border border-sand-200/90 p-4 shadow-soft-xl z-20"
+            >
+              <div className="flex items-center justify-between pb-2 border-b border-sand-100">
+                <div className="flex items-center gap-1.5 text-xs font-bold text-navy-900">
+                  <Compass className="w-3.5 h-3.5 text-coral-500" />
+                  <span>Live Trip Concierge</span>
                 </div>
-                
-                <div className="mt-2.5 space-y-1.5">
-                  <div className="flex items-start gap-2 text-xs text-charcoal-700">
-                    <Clock className="w-3.5 h-3.5 text-amber-600 shrink-0 mt-0.5" />
-                    <div>
-                      <p className="font-semibold text-charcoal-900 text-[11px]">Flight delayed 2h 15m</p>
-                      <p className="text-[10px] text-muted-foreground">Airport pickup rescheduled automatically</p>
-                    </div>
-                  </div>
-
-                  <div className="flex items-start gap-2 text-xs text-charcoal-700 pt-1">
-                    <CheckCircle className="w-3.5 h-3.5 text-emerald-600 shrink-0 mt-0.5" />
-                    <div>
-                      <p className="font-semibold text-charcoal-900 text-[11px]">Sunset Cruise swapped to Day 2</p>
-                      <p className="text-[10px] text-emerald-700">Zero penalty • Dinner table preserved</p>
-                    </div>
+                <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800 border border-emerald-200 flex items-center gap-1">
+                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
+                  Active Sync
+                </span>
+              </div>
+              
+              <div className="mt-2.5 space-y-2">
+                <div className="flex items-start gap-2 text-xs">
+                  <Clock className="w-3.5 h-3.5 text-amber-600 shrink-0 mt-0.5" />
+                  <div>
+                    <p className="font-semibold text-navy-900 text-[11px]">Flight 6E-204 delayed 2h 15m</p>
+                    <p className="text-[10px] text-muted-foreground">Airport pickup driver rescheduled automatically</p>
                   </div>
                 </div>
-              </motion.div>
 
-            </div>
+                <div className="flex items-start gap-2 text-xs pt-1 border-t border-sand-50">
+                  <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600 shrink-0 mt-0.5" />
+                  <div>
+                    <p className="font-semibold text-navy-900 text-[11px]">Sunset Cruise swapped to Day 2</p>
+                    <p className="text-[10px] text-emerald-700 font-medium">Zero penalty • Dinner table preserved</p>
+                  </div>
+                </div>
+              </div>
+            </motion.div>
+
+            {/* Floating Card 3: Social Proof / Community Counter (Bottom-Right) */}
+            <motion.div
+              initial={{ opacity: 0, x: 20 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.6, delay: 0.6 }}
+              className="absolute -bottom-3 -right-2 sm:-right-4 hidden sm:flex items-center gap-2 bg-white/95 backdrop-blur-md border border-sand-200 rounded-full px-3.5 py-1.5 shadow-soft-md z-20"
+            >
+              <div className="flex -space-x-1.5 overflow-hidden">
+                <span className="inline-block h-6 w-6 rounded-full bg-coral-400 text-[9px] font-bold text-white flex items-center justify-center ring-2 ring-white">P</span>
+                <span className="inline-block h-6 w-6 rounded-full bg-honey-400 text-[9px] font-bold text-white flex items-center justify-center ring-2 ring-white">R</span>
+                <span className="inline-block h-6 w-6 rounded-full bg-emerald-400 text-[9px] font-bold text-white flex items-center justify-center ring-2 ring-white">A</span>
+              </div>
+              <span className="text-[11px] font-bold text-navy-900">
+                1,200+ Journeys Adapted
+              </span>
+            </motion.div>
+
           </motion.div>
 
         </div>
       </div>
+
+      {/* Interactive Live Demo Modal */}
+      <LiveAdaptationModal isOpen={demoOpen} onClose={() => setDemoOpen(false)} />
+
     </section>
   )
 }
+export default HeroSection

@@ -4,27 +4,27 @@
 
 @layer base {
   :root {
-    --background: #FAF8F5;
-    --foreground: #1A1C22;
+    --background: #FFFDF9;
+    --foreground: #181E4B;
     --card: #FFFFFF;
-    --card-foreground: #1A1C22;
+    --card-foreground: #181E4B;
     --popover: #FFFFFF;
-    --popover-foreground: #1A1C22;
-    --primary: #C84B31;
+    --popover-foreground: #181E4B;
+    --primary: #DF6951;
     --primary-foreground: #FFFFFF;
-    --primary-hover: #B43F26;
-    --primary-subtle: #FDF5F2;
-    --secondary: #242933;
+    --primary-hover: #C74E36;
+    --primary-subtle: #FDF5F3;
+    --secondary: #181E4B;
     --secondary-foreground: #FFFFFF;
-    --muted: #F2EFE9;
-    --muted-foreground: #6B7280;
-    --accent: #EFE9DD;
-    --accent-foreground: #1A1C22;
-    --accent-warm: #E27D60;
-    --accent-teal: #1F6E68;
-    --border: #E8E2D6;
-    --input: #E4DDD1;
-    --ring: #C84B31;
+    --muted: #F8F5EE;
+    --muted-foreground: #5E6282;
+    --accent: #FEF1D4;
+    --accent-foreground: #181E4B;
+    --accent-warm: #F1A501;
+    --accent-teal: #14B8A6;
+    --border: #F1ECE1;
+    --input: #EBE4D5;
+    --ring: #DF6951;
   }
 
   * {
@@ -36,6 +36,7 @@
     font-feature-settings: "rlig" 1, "calt" 1;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
+    background-color: #FFFDF9;
   }
 }
 

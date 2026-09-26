@@ -1,34 +1,60 @@
-import React from 'react'
-import { motion } from 'framer-motion'
-import { Heart, Wallet, Clock, Compass, Sparkles, Utensils, Waves, Mountain, Shield } from 'lucide-react'
+import React, { useState } from 'react'
+import { motion, AnimatePresence } from 'framer-motion'
+import { Heart, Wallet, Clock, Compass, Utensils, Waves, Mountain, Shield, Check, Flame, Coffee, Camera } from 'lucide-react'
 import { Card } from '@/components/ui/Card'
 import { Badge } from '@/components/ui/Badge'
 import { formatCurrency } from '@/lib/utils'
 
 export const PlanningSection = () => {
-  const interestPills = [
-    { label: "Adventure", icon: Mountain, selected: true },
-    { label: "Food & Heritage", icon: Utensils, selected: true },
-    { label: "Beaches", icon: Waves, selected: true },
-    { label: "Wellness", icon: Heart, selected: false },
-    { label: "Nightlife", icon: Compass, selected: false },
+  const [selectedInterests, setSelectedInterests] = useState(['Adventure', 'Food & Heritage', 'Beaches'])
+  const [budgetLevel, setBudgetLevel] = useState(35000)
+  const [selectedPace, setSelectedPace] = useState('Balanced')
+
+  const interestOptions = [
+    { label: "Adventure", icon: Mountain, color: "text-amber-700 bg-amber-50" },
+    { label: "Food & Heritage", icon: Utensils, color: "text-coral-700 bg-coral-50" },
+    { label: "Beaches", icon: Waves, color: "text-sky-700 bg-sky-50" },
+    { label: "Cafes & Art", icon: Coffee, color: "text-emerald-700 bg-emerald-50" },
+    { label: "Photography", icon: Camera, color: "text-purple-700 bg-purple-50" },
+    { label: "Wellness & Spa", icon: Heart, color: "text-rose-700 bg-rose-50" },
   ]
 
+  const toggleInterest = (label) => {
+    setSelectedInterests(prev => 
+      prev.includes(label) 
+        ? (prev.length > 1 ? prev.filter(i => i !== label) : prev)
+        : [...prev, label]
+    )
+  }
+
   return (
-    <section className="py-16 md:py-24 bg-sand-50/60 border-y border-sand-200/70 relative">
-      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+    <section className="py-20 md:py-28 bg-[#FAF6F0]/80 border-y border-[#F1ECE1] relative overflow-hidden">
+      {/* Hand-drawn accent spiral */}
+      <div className="absolute top-10 right-8 -z-0 opacity-15 pointer-events-none hidden lg:block">
+        <svg width="140" height="140" viewBox="0 0 100 100" fill="none" stroke="#DF6951" strokeWidth="2">
+          <path d="M50 50 A20 20 0 0 1 70 50 A40 40 0 0 1 30 50 A60 60 0 0 1 90 50" />
+        </svg>
+      </div>
+
+      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 relative z-10">
         
-        {/* Section Header */}
-        <div className="max-w-2xl text-left mb-12 sm:mb-16">
-          <Badge variant="secondary" className="mb-3 text-[11px] uppercase tracking-wider font-semibold">
-            Tailored Blueprint
-          </Badge>
-          <h2 className="text-3xl sm:text-4xl font-bold tracking-tight text-charcoal-950 font-serif">
+        {/* Section Header with Human Editorial Touch */}
+        <div className="max-w-2xl text-left mb-14 sm:mb-16">
+          <div className="flex items-center gap-2 mb-3">
+            <span className="text-xs font-bold uppercase tracking-wider text-coral-500 font-sans">
+              Tailored Blueprint
+            </span>
+            <span className="font-handwriting text-lg text-[#5E6282] -rotate-2">
+              ~ your travel, your tempo
+            </span>
+          </div>
+          
+          <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold tracking-tight text-navy-900 font-serif leading-[1.18]">
             Your interests. Your budget. <br className="hidden sm:inline" />
-            <span className="text-terracotta-600">Your journey.</span>
+            <span className="text-coral-500 italic">Your journey.</span>
           </h2>
-          <p className="mt-3 text-sm sm:text-base text-charcoal-700 leading-relaxed">
-            TripSaathi doesn't assemble generic cookie-cutter templates. We calibrate every stop to your travel pace, dynamic budget constraints, and personal taste.
+          <p className="mt-4 text-base sm:text-lg text-[#5E6282] leading-relaxed">
+            TripSaathi doesn't assemble cookie-cutter tour packages. We calibrate every stop to your travel pace, dynamic budget constraints, and personal taste.
           </p>
         </div>
 
@@ -37,136 +63,181 @@ export const PlanningSection = () => {
           
           {/* Pillar 1: Interests */}
           <motion.div
-            whileHover={{ y: -4 }}
-            transition={{ duration: 0.2 }}
+            whileHover={{ y: -5 }}
+            transition={{ type: "spring", stiffness: 300 }}
           >
-            <Card className="p-5 h-full bg-white flex flex-col justify-between border-sand-200/90 shadow-soft-xs hover:shadow-soft-md">
+            <div className="p-6 h-full bg-white rounded-3xl flex flex-col justify-between border border-[#EFEAE0] shadow-soft-sm hover:shadow-soft-lg transition-all">
               <div>
                 <div className="flex items-center justify-between mb-4">
-                  <div className="w-10 h-10 rounded-xl bg-terracotta-50 border border-terracotta-200/60 flex items-center justify-center text-terracotta-700">
-                    <Heart className="w-5 h-5" />
+                  <div className="w-12 h-12 rounded-2xl bg-coral-50 border border-coral-200/60 flex items-center justify-center text-coral-600 shadow-xs">
+                    <Heart className="w-6 h-6" />
                   </div>
-                  <Badge variant="default" size="sm">Pillar 01</Badge>
+                  <span className="text-[11px] font-bold text-coral-600 bg-coral-50 px-2.5 py-1 rounded-full">
+                    Pillar 01
+                  </span>
                 </div>
-                <h3 className="font-serif font-bold text-base text-charcoal-900 mb-1">Curated Interests</h3>
-                <p className="text-xs text-muted-foreground mb-4 leading-relaxed">
-                  Select key travel vibes and let AI discover hidden authentic spots beyond the tourist traps.
+                <h3 className="font-serif font-bold text-lg text-navy-900 mb-1.5">Curated Interests</h3>
+                <p className="text-xs text-[#5E6282] mb-5 leading-relaxed">
+                  Toggle your travel vibes. Discover handpicked authentic local spots beyond ordinary tourist traps.
                 </p>
               </div>
 
-              <div className="flex flex-wrap gap-1.5 pt-3 border-t border-sand-100">
-                {interestPills.map(item => (
-                  <span
-                    key={item.label}
-                    className={`inline-flex items-center gap-1 px-2.5 py-1 rounded-md text-[11px] font-medium transition-all ${
-                      item.selected
-                        ? "bg-terracotta-600 text-white font-semibold shadow-xs"
-                        : "bg-sand-100 text-charcoal-600 hover:bg-sand-200"
-                    }`}
-                  >
-                    <item.icon className="w-3 h-3" />
-                    {item.label}
-                  </span>
-                ))}
+              {/* Interactive Interest Pills */}
+              <div className="space-y-2 pt-3 border-t border-[#F5F2EA]">
+                <p className="text-[10px] font-bold uppercase tracking-wider text-charcoal-400">
+                  Click to select vibes:
+                </p>
+                <div className="flex flex-wrap gap-1.5">
+                  {interestOptions.map(item => {
+                    const isSelected = selectedInterests.includes(item.label)
+                    const Icon = item.icon
+                    return (
+                      <motion.button
+                        key={item.label}
+                        type="button"
+                        whileTap={{ scale: 0.95 }}
+                        onClick={() => toggleInterest(item.label)}
+                        className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-medium transition-all ${
+                          isSelected
+                            ? "bg-coral-500 text-white font-semibold shadow-warm-coral"
+                            : "bg-[#F5F2EA] text-charcoal-700 hover:bg-[#EBE5D8]"
+                        }`}
+                      >
+                        <Icon className="w-3.5 h-3.5" />
+                        <span>{item.label}</span>
+                        {isSelected && <Check className="w-3 h-3 stroke-[3]" />}
+                      </motion.button>
+                    )
+                  })}
+                </div>
               </div>
-            </Card>
+            </div>
           </motion.div>
 
-          {/* Pillar 2: Budget */}
+          {/* Pillar 2: Smart Budgeting */}
           <motion.div
-            whileHover={{ y: -4 }}
-            transition={{ duration: 0.2 }}
+            whileHover={{ y: -5 }}
+            transition={{ type: "spring", stiffness: 300 }}
           >
-            <Card className="p-5 h-full bg-white flex flex-col justify-between border-sand-200/90 shadow-soft-xs hover:shadow-soft-md">
+            <div className="p-6 h-full bg-white rounded-3xl flex flex-col justify-between border border-[#EFEAE0] shadow-soft-sm hover:shadow-soft-lg transition-all">
               <div>
                 <div className="flex items-center justify-between mb-4">
-                  <div className="w-10 h-10 rounded-xl bg-emerald-50 border border-emerald-200 flex items-center justify-center text-emerald-700">
-                    <Wallet className="w-5 h-5" />
+                  <div className="w-12 h-12 rounded-2xl bg-emerald-50 border border-emerald-200/60 flex items-center justify-center text-emerald-700 shadow-xs">
+                    <Wallet className="w-6 h-6" />
                   </div>
-                  <Badge variant="success" size="sm">Pillar 02</Badge>
+                  <span className="text-[11px] font-bold text-emerald-700 bg-emerald-50 px-2.5 py-1 rounded-full">
+                    Pillar 02
+                  </span>
                 </div>
-                <h3 className="font-serif font-bold text-base text-charcoal-900 mb-1">Smart Budgeting</h3>
-                <p className="text-xs text-muted-foreground mb-4 leading-relaxed">
-                  Real-time cost optimization across boutique stays, dining, and activities without unexpected overshoots.
+                <h3 className="font-serif font-bold text-lg text-navy-900 mb-1.5">Smart Budgeting</h3>
+                <p className="text-xs text-[#5E6282] mb-4 leading-relaxed">
+                  Real-time cost intelligence across boutique stays, dining, and activities without surprise bills.
                 </p>
               </div>
 
-              <div className="p-3 rounded-lg bg-sand-50 border border-sand-200/80 space-y-1.5 text-xs">
-                <div className="flex justify-between items-center text-charcoal-800 font-medium">
-                  <span>Target Budget:</span>
-                  <span className="font-bold font-serif text-charcoal-950">{formatCurrency(35000)}</span>
+              {/* Dynamic Interactive Budget Preview */}
+              <div className="p-3.5 rounded-2xl bg-[#FAF7F2] border border-[#EFEAE0] space-y-2.5 text-xs">
+                <div className="flex justify-between items-center text-navy-900 font-medium">
+                  <span className="text-[11px] text-muted-foreground font-semibold">Target Budget:</span>
+                  <span className="font-bold font-serif text-sm text-navy-900">{formatCurrency(budgetLevel)}</span>
                 </div>
-                <div className="w-full bg-sand-200 h-1.5 rounded-full overflow-hidden">
-                  <div className="bg-terracotta-600 h-full w-[69%]" />
+
+                {/* Slider */}
+                <input
+                  type="range"
+                  min="20000"
+                  max="80000"
+                  step="5000"
+                  value={budgetLevel}
+                  onChange={(e) => setBudgetLevel(Number(e.target.value))}
+                  className="w-full h-1.5 bg-sand-300 rounded-lg appearance-none cursor-pointer accent-coral-500"
+                />
+
+                <div className="w-full bg-[#E5DFD3] h-2 rounded-full overflow-hidden flex">
+                  <div className="bg-coral-500 h-full w-[68%]" />
+                  <div className="bg-emerald-500 h-full w-[32%]" />
                 </div>
                 <div className="flex justify-between text-[10px] text-muted-foreground pt-0.5">
-                  <span>₹24,200 allocated</span>
-                  <span className="text-emerald-700 font-semibold">₹10,800 buffer</span>
+                  <span>{formatCurrency(Math.round(budgetLevel * 0.68))} allocated</span>
+                  <span className="text-emerald-700 font-bold">{formatCurrency(Math.round(budgetLevel * 0.32))} safety buffer</span>
                 </div>
               </div>
-            </Card>
+            </div>
           </motion.div>
 
-          {/* Pillar 3: Duration & Pacing */}
+          {/* Pillar 3: Adaptive Duration */}
           <motion.div
-            whileHover={{ y: -4 }}
-            transition={{ duration: 0.2 }}
+            whileHover={{ y: -5 }}
+            transition={{ type: "spring", stiffness: 300 }}
           >
-            <Card className="p-5 h-full bg-white flex flex-col justify-between border-sand-200/90 shadow-soft-xs hover:shadow-soft-md">
+            <div className="p-6 h-full bg-white rounded-3xl flex flex-col justify-between border border-[#EFEAE0] shadow-soft-sm hover:shadow-soft-lg transition-all">
               <div>
                 <div className="flex items-center justify-between mb-4">
-                  <div className="w-10 h-10 rounded-xl bg-amber-50 border border-amber-200 flex items-center justify-center text-amber-700">
-                    <Clock className="w-5 h-5" />
+                  <div className="w-12 h-12 rounded-2xl bg-amber-50 border border-amber-200/60 flex items-center justify-center text-amber-700 shadow-xs">
+                    <Clock className="w-6 h-6" />
                   </div>
-                  <Badge variant="warning" size="sm">Pillar 03</Badge>
+                  <span className="text-[11px] font-bold text-amber-700 bg-amber-50 px-2.5 py-1 rounded-full">
+                    Pillar 03
+                  </span>
                 </div>
-                <h3 className="font-serif font-bold text-base text-charcoal-900 mb-1">Adaptive Duration</h3>
-                <p className="text-xs text-muted-foreground mb-4 leading-relaxed">
-                  Intelligent scheduling with calculated transit buffers so you enjoy experiences instead of rushing.
+                <h3 className="font-serif font-bold text-lg text-navy-900 mb-1.5">Adaptive Duration</h3>
+                <p className="text-xs text-[#5E6282] mb-4 leading-relaxed">
+                  Calculated transit buffers so you actually absorb the sunset rather than racing to the next checklist item.
                 </p>
               </div>
 
-              <div className="space-y-2 pt-2 border-t border-sand-100">
+              <div className="space-y-2.5 pt-3 border-t border-[#F5F2EA]">
                 <div className="flex items-center justify-between text-xs">
-                  <span className="text-charcoal-700 font-medium">Trip Timeline:</span>
-                  <span className="font-bold text-charcoal-900">4 Days / 3 Nights</span>
+                  <span className="text-[#5E6282] font-medium">Trip Timeline:</span>
+                  <span className="font-bold text-navy-900 font-serif">4 Days / 3 Nights</span>
                 </div>
-                <div className="flex items-center gap-1 text-[11px] text-charcoal-600">
-                  <span className="w-2 h-2 rounded-full bg-amber-500" />
-                  <span>3-4 curated stops per day</span>
+                <div className="p-2.5 rounded-xl bg-amber-50/60 border border-amber-200/60 flex items-center gap-2 text-[11px] text-amber-900">
+                  <Compass className="w-3.5 h-3.5 text-amber-600 shrink-0" />
+                  <span>3-4 unhurried curated stops per day</span>
                 </div>
               </div>
-            </Card>
+            </div>
           </motion.div>
 
           {/* Pillar 4: Travel Style */}
           <motion.div
-            whileHover={{ y: -4 }}
-            transition={{ duration: 0.2 }}
+            whileHover={{ y: -5 }}
+            transition={{ type: "spring", stiffness: 300 }}
           >
-            <Card className="p-5 h-full bg-white flex flex-col justify-between border-sand-200/90 shadow-soft-xs hover:shadow-soft-md">
+            <div className="p-6 h-full bg-white rounded-3xl flex flex-col justify-between border border-[#EFEAE0] shadow-soft-sm hover:shadow-soft-lg transition-all">
               <div>
                 <div className="flex items-center justify-between mb-4">
-                  <div className="w-10 h-10 rounded-xl bg-sky-50 border border-sky-200 flex items-center justify-center text-sky-700">
-                    <Compass className="w-5 h-5" />
+                  <div className="w-12 h-12 rounded-2xl bg-sky-50 border border-sky-200/60 flex items-center justify-center text-sky-700 shadow-xs">
+                    <Compass className="w-6 h-6" />
                   </div>
-                  <Badge variant="info" size="sm">Pillar 04</Badge>
+                  <span className="text-[11px] font-bold text-sky-700 bg-sky-50 px-2.5 py-1 rounded-full">
+                    Pillar 04
+                  </span>
                 </div>
-                <h3 className="font-serif font-bold text-base text-charcoal-900 mb-1">Travel Style</h3>
-                <p className="text-xs text-muted-foreground mb-4 leading-relaxed">
-                  Match the rhythm whether you crave a laid-back retreat, balanced exploration, or action-packed schedule.
+                <h3 className="font-serif font-bold text-lg text-navy-900 mb-1.5">Travel Style</h3>
+                <p className="text-xs text-[#5E6282] mb-4 leading-relaxed">
+                  Match your natural rhythm whether you desire a slow retreat, balanced wander, or high-energy thrills.
                 </p>
               </div>
 
-              <div className="grid grid-cols-2 gap-1.5 pt-2 border-t border-sand-100">
-                <div className="p-1.5 text-center rounded bg-terracotta-50 border border-terracotta-200 text-terracotta-800 text-[11px] font-bold">
-                  Balanced
-                </div>
-                <div className="p-1.5 text-center rounded bg-sand-100 text-charcoal-600 text-[11px]">
-                  Relaxed
-                </div>
+              {/* Interactive Rhythm Switcher */}
+              <div className="grid grid-cols-3 gap-1.5 pt-3 border-t border-[#F5F2EA]">
+                {['Relaxed', 'Balanced', 'Action'].map(style => (
+                  <button
+                    key={style}
+                    type="button"
+                    onClick={() => setSelectedPace(style)}
+                    className={`py-2 px-1 text-center rounded-xl text-[11px] font-medium transition-all ${
+                      selectedPace === style
+                        ? 'bg-navy-900 text-white font-bold shadow-soft-xs'
+                        : 'bg-[#F5F2EA] text-[#5E6282] hover:bg-[#EBE5D8]'
+                    }`}
+                  >
+                    {style}
+                  </button>
+                ))}
               </div>
-            </Card>
+            </div>
           </motion.div>
 
         </div>
@@ -174,3 +245,4 @@ export const PlanningSection = () => {
     </section>
   )
 }
+export default PlanningSection
