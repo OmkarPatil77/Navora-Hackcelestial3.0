@@ -5,7 +5,7 @@ import {
   Store, AlertTriangle, ArrowRight, RefreshCw, UserCheck 
 } from 'lucide-react'
 import { useTripPlan } from '@/context/TripPlanningContext'
-import { isGeminiConfigured, sendCopilotMessage, buildCopilotContext } from '@/services/geminiService'
+import { isNugenConfigured, sendCopilotMessage, buildCopilotContext } from '@/services/nugenService'
 import { executeOperatorAction } from '@/services/operatorActionExecutor'
 import { Button } from '@/components/ui/Button'
 import { Badge } from '@/components/ui/Badge'
@@ -45,7 +45,7 @@ export const OperatorOpsCopilot = () => {
   ])
 
   const messagesEndRef = useRef(null)
-  const isAiActive = isGeminiConfigured()
+  const isAiActive = isNugenConfigured()
 
   const quickPrompts = [
     { label: "How healthy is this tour?", query: "How healthy is this tour?" },
