@@ -51,11 +51,11 @@ export const FinalCtaSection = () => {
           <motion.button
             whileHover={{ scale: 1.02 }}
             whileTap={{ scale: 0.98 }}
-            onClick={() => navigate('/trip')}
+            onClick={() => navigate('/itinerary')}
             className="w-full sm:w-auto bg-white hover:bg-[#FAF7F2] text-navy-900 border border-[#EFEAE0] font-bold text-base px-8 py-4 rounded-2xl shadow-soft-xs transition-all flex items-center justify-center gap-2"
           >
             <Compass className="w-4 h-4 text-coral-500" />
-            <span>View Live Demo Trip</span>
+            <span>View Itinerary</span>
           </motion.button>
         </div>
 

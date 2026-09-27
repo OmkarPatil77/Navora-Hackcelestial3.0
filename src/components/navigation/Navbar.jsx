@@ -113,35 +113,31 @@ export const Navbar = () => {
           {/* CASE 2: AUTHENTICATED AS TRAVELER */}
           {isAuthenticated && isTraveler && (
             <>
-              {/* Notification bell */}
+              {/* Notification Bell */}
               <Dropdown
                 trigger={
                   <button 
-                    aria-label="View trip notifications"
+                    aria-label="View notifications"
                     className="relative flex h-9 w-9 items-center justify-center rounded-xl border border-[#EFEAE0] bg-white text-navy-900 hover:bg-[#FAF6F0] transition-colors shadow-soft-xs"
                   >
-                    <Bell className="h-4 w-4" />
-                    <span className="absolute top-1.5 right-1.5 flex h-2 w-2">
-                      <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-coral-400 opacity-75"></span>
-                      <span className="relative inline-flex rounded-full h-2 w-2 bg-coral-500"></span>
-                    </span>
+                    <Bell className="h-4 w-4 text-navy-900" />
                   </button>
                 }
               >
-                <div className="p-2 w-72">
+                <div className="p-3.5 w-72">
                   <div className="flex items-center justify-between pb-2 border-b border-sand-200">
-                    <span className="text-xs font-bold text-navy-900">Trip Updates</span>
-                    <span className="text-[10px] text-coral-600 font-semibold">1 Alert</span>
+                    <span className="text-xs font-bold text-navy-900">Notifications</span>
+                    <span className="text-[10px] text-sand-500 font-semibold">0 New</span>
                   </div>
-                  <div className="py-2.5 space-y-1.5 text-xs text-charcoal-700">
-                    <div className="p-2 rounded-lg bg-amber-50/80 border border-amber-200 text-left">
-                      <p className="font-semibold text-amber-900 text-[11px]">Flight Delay Update</p>
-                      <p className="text-[11px] text-amber-800 mt-0.5">Afternoon schedule adjusted to protect evening dinner.</p>
+                  <div className="py-5 text-center space-y-1">
+                    <div className="w-10 h-10 rounded-full bg-sand-100 text-sand-400 mx-auto flex items-center justify-center mb-1.5">
+                      <Bell className="w-5 h-5 text-sand-400" />
                     </div>
+                    <p className="text-xs font-bold text-navy-900">No New Notifications</p>
+                    <p className="text-[11px] text-[#5E6282] leading-relaxed max-w-[210px] mx-auto">
+                      You're all caught up! Live updates and trip alerts will appear here when active.
+                    </p>
                   </div>
-                  <Button size="sm" variant="outline" className="w-full text-xs" onClick={() => navigate('/trip')}>
-                    View Live Trip
-                  </Button>
                 </div>
               </Dropdown>
 
@@ -171,10 +167,6 @@ export const Navbar = () => {
                   <DropdownItem onClick={() => navigate('/itinerary')}>
                     <Calendar className="w-3.5 h-3.5 mr-2 text-charcoal-500" />
                     <span>My Itinerary</span>
-                  </DropdownItem>
-                  <DropdownItem onClick={() => navigate('/trip')}>
-                    <MapPin className="w-3.5 h-3.5 mr-2 text-emerald-500" />
-                    <span>Live Trip View</span>
                   </DropdownItem>
                   <DropdownSeparator />
                   <DropdownItem onClick={handleLogout} className="text-rose-600 hover:text-rose-700">

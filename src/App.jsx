@@ -11,6 +11,7 @@ import { Landing } from '@/pages/Landing'
 import { PlanTrip } from '@/pages/PlanTrip'
 import { Recommendations } from '@/pages/Recommendations'
 import { Itinerary } from '@/pages/Itinerary'
+import { Checkout } from '@/pages/Checkout'
 import { Trip } from '@/pages/Trip'
 import { Login } from '@/pages/Login'
 import { SignUp } from '@/pages/SignUp'
@@ -57,6 +58,14 @@ function App() {
                 element={
                   <ProtectedRoute allowedRoles={['TRAVELER']}>
                     <Itinerary />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/checkout"
+                element={
+                  <ProtectedRoute allowedRoles={['TRAVELER']}>
+                    <Checkout />
                   </ProtectedRoute>
                 }
               />

@@ -3,7 +3,8 @@ import { motion, AnimatePresence } from 'framer-motion'
 import { 
   Plane, Clock, AlertTriangle, CheckCircle2, ArrowRight, 
   Sparkles, RefreshCw, MapPin, Phone, ShieldCheck, Check, 
-  Navigation, RotateCcw, AlertOctagon, Car, Hotel, Compass, Utensils
+  Navigation, RotateCcw, AlertOctagon, Car, Hotel, Compass, Utensils,
+  CloudRain, Eye
 } from 'lucide-react'
 import { useTripPlan } from '@/context/TripPlanningContext'
 import { Button } from '@/components/ui/Button'
@@ -19,6 +20,7 @@ import JourneyHealthCard from '@/components/traveler/JourneyHealthCard'
 import JourneyMemoryWidget from '@/components/traveler/JourneyMemoryWidget'
 import ExplainabilityModal from '@/components/shared/ExplainabilityModal'
 import PageTransition from '@/components/motion/PageTransition'
+import { WeatherTwinDashboardModal } from '@/components/traveler/itinerary/WeatherTwinDashboardModal'
 import { 
   explainDisruptionImpact, 
   explainRecoveryDecision, 
@@ -40,10 +42,13 @@ export const Trip = () => {
     resetDisruptionSimulation,
     getDisruptionImpactForNode,
     journeyHealth,
-    journeyMemory
+    journeyMemory,
+    setItinerary
   } = useTripPlan()
 
   const [isSimModalOpen, setIsSimModalOpen] = useState(false)
+  const [isWeatherModalOpen, setIsWeatherModalOpen] = useState(false)
+  const [weatherAlertDismissed, setWeatherAlertDismissed] = useState(false)
   const [previewPlan, setPreviewPlan] = useState(null)
   const [isAnalyzing, setIsAnalyzing] = useState(false)
   const [analysisStep, setAnalysisStep] = useState(0)
@@ -193,6 +198,118 @@ export const Trip = () => {
 
           {/* Dynamic Journey Health Card */}
           <JourneyHealthCard />
+
+          {/* TRAVELER MOBILE WEATHER ALERT (Requirement 12) */}
+          {!weatherAlertDismissed && (
+            <Card className="p-5 sm:p-6 bg-gradient-to-r from-sky-950 via-slate-900 to-navy-950 text-white border-2 border-amber-400 shadow-xl space-y-4">
+              <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-4">
+                <div className="flex items-start gap-3.5">
+                  <div className="w-11 h-11 rounded-2xl bg-amber-500/20 border border-amber-400/50 flex items-center justify-center text-amber-300 shrink-0 text-xl animate-pulse">
+                    🌧️
+                  </div>
+                  <div className="space-y-1">
+                    <div className="flex items-center gap-2 flex-wrap">
+                      <span className="px-2.5 py-0.5 rounded-full bg-rose-500 text-white text-[10px] font-bold uppercase tracking-wider">
+                        Weather disruption detected
+                      </span>
+                      <span className="text-xs text-amber-300 font-mono">
+                        Live Forecast: Heavy Rainfall Detected (~80mm)
+                      </span>
+                    </div>
+                    <h3 className="text-lg font-serif font-bold text-white">
+                      Heavy rainfall may affect 3 activities in your itinerary
+                    </h3>
+                    <p className="text-xs text-sand-200 leading-relaxed max-w-2xl">
+                      Simulated coastal squall affects outdoor activities. NAVORA Digital Twin has calculated risk, secondary transit delays, and an adaptive replan.
+                    </p>
+                  </div>
+                </div>
+
+                <div className="flex items-center gap-2 self-start sm:self-center">
+                  <span className="px-2.5 py-1 rounded-xl bg-amber-400/20 text-amber-300 border border-amber-400/40 text-xs font-mono font-bold">
+                    Risk: HIGH (85%)
+                  </span>
+                </div>
+              </div>
+
+              {/* Detail Grid: Affected, Alternatives, Expected Changes */}
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-3 text-xs pt-1">
+                <div className="p-3 rounded-xl bg-white/10 border border-white/15 space-y-1">
+                  <span className="text-[10px] uppercase font-bold text-amber-300 block tracking-wider">
+                    Affected Activity
+                  </span>
+                  <p className="font-semibold text-white">Baga Beach Water Sports</p>
+                  <span className="text-[11px] text-rose-300 block">Wave swell & rain exposure (85% risk)</span>
+                </div>
+
+                <div className="p-3 rounded-xl bg-white/10 border border-white/15 space-y-1">
+                  <span className="text-[10px] uppercase font-bold text-amber-300 block tracking-wider">
+                    Alternative Activity
+                  </span>
+                  <p className="font-semibold text-white">Fontainhas Latin Quarter Walk</p>
+                  <span className="text-[11px] text-emerald-300 block">Sheltered heritage & culinary tasting</span>
+                </div>
+
+                <div className="p-3 rounded-xl bg-white/10 border border-white/15 space-y-1">
+                  <span className="text-[10px] uppercase font-bold text-amber-300 block tracking-wider">
+                    Expected Changes
+                  </span>
+                  <p className="font-semibold text-white">Transit +30m & Dinner Shift</p>
+                  <span className="text-[11px] text-sand-300 block">Buffers downstream reservation timing</span>
+                </div>
+              </div>
+
+              {/* AI Explanation snippet */}
+              <div className="p-3 rounded-xl bg-amber-500/10 border border-amber-400/30 text-xs text-amber-100 flex items-center gap-2">
+                <Sparkles className="w-4 h-4 text-amber-300 shrink-0" />
+                <span>
+                  <strong>Gemini Explanation:</strong> Replacing water sports with Fontainhas preserves your cultural interest DNA with zero rain hazard, saves ₹600, and ensures smooth arrival.
+                </span>
+              </div>
+
+              {/* Buttons: View Impact, View Alternatives, Apply New Plan, Keep Current Plan */}
+              <div className="flex flex-wrap items-center justify-between gap-3 pt-2 border-t border-white/10">
+                <div className="flex flex-wrap items-center gap-2">
+                  <Button
+                    size="sm"
+                    onClick={() => setIsWeatherModalOpen(true)}
+                    className="bg-amber-400 hover:bg-amber-300 text-navy-950 font-bold text-xs"
+                    leftIcon={<Eye className="w-3.5 h-3.5" />}
+                  >
+                    View Impact
+                  </Button>
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    onClick={() => setIsWeatherModalOpen(true)}
+                    className="border-white/30 text-white hover:bg-white/10 text-xs font-semibold"
+                    leftIcon={<Sparkles className="w-3.5 h-3.5 text-amber-300" />}
+                  >
+                    View Alternatives
+                  </Button>
+                </div>
+
+                <div className="flex items-center gap-2">
+                  <Button
+                    size="sm"
+                    variant="ghost"
+                    onClick={() => setWeatherAlertDismissed(true)}
+                    className="text-xs text-sand-300 hover:text-white"
+                  >
+                    Keep Current Plan
+                  </Button>
+                  <Button
+                    size="sm"
+                    onClick={() => setIsWeatherModalOpen(true)}
+                    className="bg-emerald-500 hover:bg-emerald-400 text-navy-950 font-bold text-xs px-4"
+                    rightIcon={<Check className="w-3.5 h-3.5" />}
+                  >
+                    Apply New Plan
+                  </Button>
+                </div>
+              </div>
+            </Card>
+          )}
 
           {/* Live Analysis Processing Animation */}
           <AnimatePresence>
@@ -567,6 +684,23 @@ export const Trip = () => {
           isOpen={Boolean(explainModalData)}
           onClose={() => setExplainModalData(null)}
           explanation={explainModalData}
+        />
+
+        {/* Weather Twin Dashboard & What-If Simulator Modal */}
+        <WeatherTwinDashboardModal
+          isOpen={isWeatherModalOpen}
+          onClose={() => setIsWeatherModalOpen(false)}
+          itinerary={itinerary}
+          tripPreferences={tripPreferences}
+          onApplyWeatherChanges={(analysis, rec, adaptedItinerary) => {
+            if (adaptedItinerary) {
+              setItinerary(adaptedItinerary)
+            }
+            setIsWeatherModalOpen(false)
+            setWeatherAlertDismissed(true)
+            setToastMessage(`✓ Weather adaptation applied: Water Sports replaced with Fontainhas Heritage Walk.`)
+            setTimeout(() => setToastMessage(null), 4500)
+          }}
         />
 
         </div>

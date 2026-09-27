@@ -38,6 +38,17 @@ export const Recommendations = () => {
     bookedTrip
   } = useTripPlan()
 
+  const {
+    destination,
+    duration,
+    travelers,
+    interests = ["adventure", "food", "beaches"],
+    budget,
+    travelStyle
+  } = tripPreferences || {}
+
+  const adultCount = Math.max(1, travelers?.adults || travelers?.total || 2)
+
   // Real View Mode derived from actual trip booking validation
   // If booked -> 'booked' view (curated for booked destination)
   // If not booked -> 'mixed' view (curated showcase of all destinations)
@@ -52,8 +63,15 @@ export const Recommendations = () => {
     }
   }, [isTripBooked])
 
-  // Destination filter when in mixed view
-  const [selectedDestinationFilter, setSelectedDestinationFilter] = useState("All")
+  // Destination filter dynamically synced with active trip destination
+  const currentCity = destination?.city || destination?.name || "Goa"
+  const [selectedDestinationFilter, setSelectedDestinationFilter] = useState(() => currentCity)
+
+  useEffect(() => {
+    if (destination?.city || destination?.name) {
+      setSelectedDestinationFilter(destination.city || destination.name)
+    }
+  }, [destination?.city, destination?.name])
 
   // Filter & Sort State
   const [selectedCategory, setSelectedCategory] = useState("All")
@@ -69,17 +87,6 @@ export const Recommendations = () => {
   const [activeExperienceModal, setActiveExperienceModal] = useState(null)
   const [showOptimizeModal, setShowOptimizeModal] = useState(false)
   const [explainModalData, setExplainModalData] = useState(null)
-
-  const {
-    destination,
-    duration,
-    travelers,
-    interests = ["adventure", "food", "beaches"],
-    budget,
-    travelStyle
-  } = tripPreferences
-
-  const adultCount = Math.max(1, travelers?.adults || travelers?.total || 2)
 
   const formatInterestLabels = (ids) => {
     return ids.map(id => {
@@ -133,21 +140,15 @@ export const Recommendations = () => {
     setSelectedDestinationFilter("All")
   }
 
-  // Action validation: if trip is not booked, block adding to trip and show validation notice
+  // Action validation & seamless experience toggling
   const handleToggleExperienceWithValidation = (experience) => {
-    if (!isTripBooked) {
-      setValidationAlert("Trip Booking Required: You have not booked or planned a trip yet! Please select a destination and plan/book your trip first before adding experiences to your itinerary.")
-      window.scrollTo({ top: 0, behavior: 'smooth' })
-      return
-    }
-
-    // If trip is booked for Destination A, prevent cross-destination adding
-    const bookedDest = (tripPreferences.destination?.city || tripPreferences.destination?.name || '').toLowerCase()
+    const activeDest = (destination?.city || destination?.name || '').toLowerCase()
     const expDest = (experience.destination || '').toLowerCase()
-    if (!bookedDest.includes(expDest) && !expDest.includes(bookedDest)) {
-      setValidationAlert(`Destination Mismatch: "${experience.title}" is located in ${experience.destination}, but your booked journey is in ${tripPreferences.destination?.city || tripPreferences.destination?.name}. You can only add experiences within your booked destination.`)
-      window.scrollTo({ top: 0, behavior: 'smooth' })
-      return
+
+    // If tapping an experience from another destination, switch destination dynamically
+    if (expDest && activeDest && !activeDest.includes(expDest) && !expDest.includes(activeDest)) {
+      setDestination(experience.destination)
+      setSelectedDestinationFilter(experience.destination)
     }
 
     toggleExperience(experience)
@@ -252,11 +253,11 @@ export const Recommendations = () => {
 
                 <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 shrink-0 w-full lg:w-auto">
                   <Button
-                    onClick={() => navigate('/plan')}
+                    onClick={() => navigate('/itinerary')}
                     className="bg-coral-500 hover:bg-coral-600 text-white font-bold text-xs shadow-warm-coral px-5 py-3 rounded-xl"
                     rightIcon={<ArrowRight className="w-3.5 h-3.5" />}
                   >
-                    Select Destination & Plan Trip
+                    Confirm Experiences & View Itinerary ➔
                   </Button>
                 </div>
               </div>
@@ -343,15 +344,7 @@ export const Recommendations = () => {
             </motion.div>
           )}
 
-          {/* AI Match Summary & Journey Fit Widget (Only rendered when trip is booked) */}
-          {(isTripBooked && viewMode === 'booked') && (
-            <JourneyFitWidget
-              metrics={journeyFitMetrics}
-              tripPreferences={tripPreferences}
-              totalPlannedActivitiesCost={totalPlannedActivitiesCost}
-              remainingBudget={remainingBudget}
-            />
-          )}
+
 
           {/* Filters & Sorting Section */}
           <div className="space-y-4">
@@ -711,11 +704,11 @@ export const Recommendations = () => {
               ) : (
                 <Button
                   size="lg"
-                  onClick={() => navigate('/plan')}
-                  className="w-full sm:w-auto bg-coral-500 hover:bg-coral-600 text-white shadow-warm-coral px-8 font-semibold"
+                  onClick={() => navigate('/itinerary')}
+                  className="w-full sm:w-auto bg-gradient-to-r from-coral-500 to-amber-500 hover:from-coral-600 hover:to-amber-600 text-white shadow-warm-coral px-8 font-bold"
                   rightIcon={<ArrowRight className="w-4 h-4" />}
                 >
-                  Plan & Book a Trip
+                  Confirm Experiences & View Itinerary ➔
                 </Button>
               )}
             </div>

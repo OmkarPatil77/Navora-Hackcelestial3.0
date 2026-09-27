@@ -94,9 +94,11 @@ export const PlanTrip = () => {
     setIsGenerating(true)
     setTimeout(() => {
       setIsGenerating(false)
-      bookTrip()
+      if (tripPreferences?.destination) {
+        setDestination(tripPreferences.destination)
+      }
       navigate('/recommendations')
-    }, 1000)
+    }, 800)
   }
 
   return (

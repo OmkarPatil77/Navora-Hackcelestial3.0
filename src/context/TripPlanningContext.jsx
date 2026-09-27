@@ -278,16 +278,16 @@ export const TripPlanningProvider = ({ children }) => {
       if (found) {
         destObj = { ...found }
       } else {
+        const cityName = destinationData.split(',')[0].trim()
         destObj = {
           id: destinationData.toLowerCase().replace(/\s+/g, '-'),
           name: destinationData,
-          city: destinationData.split(',')[0].trim(),
+          city: cityName,
           country: 'India',
           region: 'India'
         }
       }
     } else if (destinationData && typeof destinationData === 'object') {
-      // Find matching mock destination if needed
       const match = mockDestinations.find(d => 
         d.id === destinationData.id || 
         (destinationData.city && d.city.toLowerCase() === destinationData.city.toLowerCase()) ||
@@ -300,7 +300,7 @@ export const TripPlanningProvider = ({ children }) => {
     const newDestExperiences = getExperiencesByDestination(destQuery)
     const adultCount = Math.max(1, tripPreferences.travelers?.adults || 2)
 
-    // Automatically select top authentic experiences matching the new destination
+    // Select top experiences matching the new destination
     const newSelected = newDestExperiences.slice(0, 4).map(exp => ({
       experienceId: exp.id,
       quantity: adultCount,
@@ -313,21 +313,21 @@ export const TripPlanningProvider = ({ children }) => {
       console.warn("Could not save new selected experiences", e)
     }
 
-    setTripPreferences(prev => {
-      const updated = {
-        ...prev,
-        destination: destObj
-      }
-      // Re-generate fresh itinerary when destination updates
-      const newItin = generateItinerary(updated, newSelected)
-      setItinerary(newItin)
-      try {
-        localStorage.setItem(STORAGE_KEY, JSON.stringify(updated))
-      } catch (e) {
-        console.warn("Could not save trip preferences", e)
-      }
-      return updated
-    })
+    const updatedPrefs = {
+      ...tripPreferences,
+      destination: destObj
+    }
+
+    // Re-generate fresh dynamic itinerary for the destination
+    const newItin = generateItinerary(updatedPrefs, newSelected)
+    setItinerary(newItin)
+    setTripPreferences(updatedPrefs)
+
+    try {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(updatedPrefs))
+    } catch (e) {
+      console.warn("Could not save trip preferences", e)
+    }
   }
 
   // Set dates

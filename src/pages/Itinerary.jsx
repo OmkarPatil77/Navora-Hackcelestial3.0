@@ -1,10 +1,11 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { motion, AnimatePresence } from 'framer-motion'
 import { 
   Calendar, MapPin, Clock, AlertTriangle, Sparkles, 
   CheckCircle2, Check, Compass, Sun, Wallet, Users, ArrowRight, 
-  ShieldCheck, Edit3, RefreshCw, Plus, Layers, Zap, Info, X 
+  ShieldCheck, Edit3, RefreshCw, Plus, Layers, Zap, Info, X, CreditCard,
+  CloudRain 
 } from 'lucide-react'
 import { useTripPlan } from '@/context/TripPlanningContext'
 import { generateItinerary } from '@/services/itineraryEngine'
@@ -28,6 +29,7 @@ import { ScheduleConflictModal } from '@/components/traveler/itinerary/ScheduleC
 import { ActivityDetailModal } from '@/components/traveler/itinerary/ActivityDetailModal'
 import { ItineraryMapView } from '@/components/traveler/itinerary/ItineraryMapView'
 import { ItineraryBudgetView } from '@/components/traveler/itinerary/ItineraryBudgetView'
+import { WeatherTwinDashboardModal } from '@/components/traveler/itinerary/WeatherTwinDashboardModal'
 
 export const Itinerary = () => {
   const navigate = useNavigate()
@@ -55,6 +57,7 @@ export const Itinerary = () => {
   const [activeItemDetailModal, setActiveItemDetailModal] = useState(null)
   const [isWhatIfOpen, setIsWhatIfOpen] = useState(false)
   const [isOptimizeOpen, setIsOptimizeOpen] = useState(false)
+  const [isWeatherTwinOpen, setIsWeatherTwinOpen] = useState(false)
   const [isComparisonOpen, setIsComparisonOpen] = useState(false)
   const [impactModalAlternative, setImpactModalAlternative] = useState(null)
   const [scheduleConflictData, setScheduleConflictData] = useState(null)
@@ -70,6 +73,17 @@ export const Itinerary = () => {
   const [disruptedActivityResolved, setDisruptedActivityResolved] = useState(false)
   const [activeAlternativeApplied, setActiveAlternativeApplied] = useState(null)
 
+  // Dynamic sync: Ensure itinerary is regenerated whenever destination or preferences change
+  useEffect(() => {
+    const prefCity = (tripPreferences?.destination?.city || tripPreferences?.destination?.name || "Goa").toLowerCase()
+    const itinCity = (itinerary?.destination?.city || itinerary?.destination?.name || "").toLowerCase()
+
+    if (!itinerary || !itinerary.days || itinerary.days.length === 0 || (itinCity && !itinCity.includes(prefCity) && !prefCity.includes(itinCity))) {
+      const fresh = generateItinerary(tripPreferences, selectedExperiences)
+      setItinerary(fresh)
+    }
+  }, [tripPreferences?.destination?.city, tripPreferences?.destination?.name])
+
   // Destination and trip metadata
   const city = tripPreferences?.destination?.city || tripPreferences?.destination?.name || "Goa"
   const dateRange = tripPreferences?.dates?.startDate && tripPreferences?.dates?.endDate
@@ -78,169 +92,15 @@ export const Itinerary = () => {
   const daysCount = tripPreferences?.duration?.days || 5
   const travelersCount = tripPreferences?.travelers?.total || 2
 
-  // Dynamic days list based on selected destination and staged experiences
-  const daysList = (itinerary?.days && itinerary.days.length > 0)
-    ? itinerary.days
-    : generateItinerary(tripPreferences, selectedExperiences)?.days || [
-    {
-      day: 1,
-      title: "Arrival & Coastal Exploration",
-      theme: "Arrival",
-      date: "12 Oct",
-      items: [
-        {
-          id: "item-d1-arrival",
-          title: "Arrival at Dabolim Airport (GOI)",
-          type: "flight",
-          startTime: "10:30 AM",
-          endTime: "11:30 AM",
-          durationMinutes: 60,
-          cost: 0,
-          location: "Dabolim Terminal",
-          proximity: "Origin Airport",
-          transitMode: "Flight arrived",
-          status: "Confirmed",
-          matches: ["Logistics", "Direct Flight"],
-          reasons: [
-            "Scheduled non-stop flight arrival from origin",
-            "Pre-arranged express baggage clearance window",
-            "Private chauffeur awaiting at Terminal Arrival Gate 3"
-          ]
-        },
-        {
-          id: "item-d1-checkin",
-          title: "Heritage Boutique Villa & Resort Check-in",
-          type: "hotel",
-          startTime: "12:00 PM",
-          endTime: "01:30 PM",
-          durationMinutes: 90,
-          cost: 12000,
-          location: "Candolim / Panjim Riverside",
-          proximity: "Central Base",
-          transitMode: "Cab arranged (35 min)",
-          status: "Confirmed",
-          matches: ["Luxury Stay", "Riverside View"],
-          reasons: [
-            "Centrally located boutique property with top heritage ratings",
-            "Early check-in approved with complimentary welcome drink",
-            "Located within 15 min of scheduled dining stops"
-          ]
-        },
-        {
-          id: "item-d1-lunch",
-          title: "Welcome Traditional Goan Thali Lunch",
-          type: "meal",
-          startTime: "02:00 PM",
-          endTime: "03:30 PM",
-          durationMinutes: 90,
-          cost: 1300,
-          location: "Panjim Heritage Bistro",
-          proximity: "10 min from hotel",
-          transitMode: "Cab arranged",
-          status: "Confirmed",
-          matches: ["Culinary", "Seafood"],
-          reasons: [
-            "Authentic Goan curry and Kokum Kadhi curated by local chef",
-            "Pre-reserved waterfront table for 2 travelers",
-            "Fits comfortably into your ₹30,000 allocated culinary budget"
-          ]
-        },
-        {
-          id: "item-d1-beach",
-          title: "Baga Beach Sunset Experience",
-          type: "experience",
-          startTime: "04:30 PM",
-          endTime: "06:30 PM",
-          durationMinutes: 120,
-          cost: 800,
-          location: "Baga Beach, North Goa",
-          proximity: "12 min from hotel",
-          transitMode: "Cab arranged",
-          status: "Confirmed",
-          matches: ["Beaches", "Photography"],
-          reasons: [
-            "Matches your primary interest in beaches and photography",
-            "Fits your ₹30,000 budget cap",
-            "12 minutes from your hotel via private transfer",
-            "Available on your selected travel date with prime sunset visibility",
-            "Does not conflict with your downstream dinner reservation"
-          ]
-        },
-        {
-          id: "item-d1-dinner",
-          title: "Riverside Candlelight Seafood Dinner",
-          type: "meal",
-          startTime: "08:00 PM",
-          endTime: "10:00 PM",
-          durationMinutes: 120,
-          cost: 1800,
-          location: "Waterfront Bistro, Panjim",
-          proximity: "15 min from beach",
-          transitMode: "Cab arranged",
-          status: "Confirmed",
-          matches: ["Romantic Dining", "Waterfront"],
-          reasons: [
-            "Curated sunset ambience along the Mandovi river",
-            "Pre-confirmed table reservation",
-            "No downstream dependencies"
-          ]
-        }
-      ]
-    },
-    {
-      day: 2,
-      title: "Coastal Waters, Scuba & Coves",
-      theme: "Adventure",
-      date: "13 Oct",
-      items: [
-        {
-          id: "item-d2-breakfast",
-          title: "Tropical Villa Breakfast with Fresh Poi",
-          type: "meal",
-          startTime: "08:30 AM",
-          endTime: "09:30 AM",
-          durationMinutes: 60,
-          cost: 700,
-          location: "Villa Dining Pavilion",
-          proximity: "At Hotel",
-          transitMode: "Walking",
-          status: "Confirmed",
-          matches: ["Breakfast", "Continental & Local"],
-          reasons: ["Complimentary artisan villa breakfast", "High energy fuel before water sports"]
-        },
-        {
-          id: "item-d2-watersports",
-          title: "Water Sports & Jet Ski Safari",
-          type: "experience",
-          startTime: "02:00 PM",
-          endTime: "04:00 PM",
-          durationMinutes: 120,
-          cost: 2500,
-          location: "Calangute Beach Coast",
-          proximity: "15 min from hotel",
-          transitMode: "Cab arranged",
-          status: "Cancelled",
-          matches: ["Water Adventure", "Thrill"],
-          reasons: ["Vendor cancelled due to localized swell"]
-        },
-        {
-          id: "item-d2-dinner",
-          title: "Seafood Balchão Feast at Fisherman's Wharf",
-          type: "meal",
-          startTime: "07:30 PM",
-          endTime: "09:30 PM",
-          durationMinutes: 120,
-          cost: 2200,
-          location: "Fisherman's Wharf, Salcete",
-          proximity: "20 min transit",
-          transitMode: "Cab arranged",
-          status: "Confirmed",
-          matches: ["Culinary", "Traditional Goan"],
-          reasons: ["Top rated coastal seafood experience", "Fits evening schedule buffer"]
-        }
-      ]
-    }
-  ]
+  // Dynamic days list derived from current destination itinerary
+  const currentItinerary = (itinerary?.days && itinerary.days.length > 0 && 
+    (itinerary?.destination?.city || itinerary?.destination?.name || '').toLowerCase().includes((city || '').toLowerCase()))
+    ? itinerary
+    : generateItinerary(tripPreferences, selectedExperiences)
+
+  const daysList = (currentItinerary?.days && currentItinerary.days.length > 0)
+    ? currentItinerary.days
+    : generateItinerary(tripPreferences, selectedExperiences).days
 
   const currentDay = daysList.find(d => d.day === selectedDayNumber) || daysList[0]
 
@@ -678,6 +538,7 @@ export const Itinerary = () => {
             travelersCount={travelersCount}
             onOpenWhatIf={() => setIsWhatIfOpen(true)}
             onOpenOptimize={() => setIsOptimizeOpen(true)}
+            onOpenWeatherTwin={() => setIsWeatherTwinOpen(true)}
           />
 
           {/* 2. Trip Summary Metrics Cards (Prompt Section 3) */}
@@ -715,6 +576,39 @@ export const Itinerary = () => {
               </motion.div>
             )}
           </AnimatePresence>
+
+          {/* Weather Twin Telemetry & What-If Simulation Banner */}
+          <div className="p-4 sm:p-5 rounded-2xl bg-gradient-to-r from-navy-900 via-navy-950 to-charcoal-900 text-white shadow-soft-sm flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+            <div className="flex items-center gap-3.5">
+              <div className="w-11 h-11 rounded-2xl bg-amber-500/20 border border-amber-400/40 text-amber-300 flex items-center justify-center shrink-0">
+                <CloudRain className="w-6 h-6 text-amber-300 animate-pulse" />
+              </div>
+              <div>
+                <div className="flex items-center gap-2">
+                  <span className="text-xs font-bold uppercase tracking-wider text-amber-300">
+                    NAVORA Weather Twin • Digital Simulation Layer
+                  </span>
+                  <span className="px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 text-[10px] font-mono font-bold border border-emerald-500/30">
+                    Sense → Propagate → Adapt
+                  </span>
+                </div>
+                <p className="text-xs text-sand-200 mt-0.5">
+                  Sense local weather, simulate cascading impact radius across activities & transport, and explore AI adaptations.
+                </p>
+              </div>
+            </div>
+
+            <div className="flex items-center gap-2 shrink-0">
+              <Button
+                size="sm"
+                onClick={() => setIsWeatherTwinOpen(true)}
+                className="bg-amber-400 hover:bg-amber-300 text-navy-950 font-bold text-xs px-4 py-2.5 rounded-xl shadow-xs"
+                rightIcon={<ArrowRight className="w-3.5 h-3.5" />}
+              >
+                Launch Weather Twin Simulator
+              </Button>
+            </div>
+          </div>
 
           {/* 3. Navigation Tabs: [ Timeline ] [ Map ] [ Budget ] (Prompt Section 4) */}
           <div className="flex items-center justify-between gap-4 border-b border-sand-200 pb-2">
@@ -754,17 +648,11 @@ export const Itinerary = () => {
               ) : (
                 <Button
                   size="sm"
-                  onClick={() => {
-                    bookTrip()
-                    setConfirmationNotice({
-                      title: "🎉 Trip Booked Successfully",
-                      message: `Your trip to ${city} is now confirmed. All vouchers and bookings are live.`
-                    })
-                  }}
-                  className="bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-semibold shadow-soft-xs h-9 px-3.5"
-                  leftIcon={<Check className="w-3.5 h-3.5" />}
+                  onClick={() => navigate('/checkout')}
+                  className="bg-navy-900 hover:bg-navy-950 text-white text-xs font-bold shadow-soft-xs h-9 px-4"
+                  leftIcon={<CreditCard className="w-3.5 h-3.5 text-emerald-400" />}
                 >
-                  Confirm & Book Trip
+                  Finalize & Pay via Stripe 💳
                 </Button>
               )}
             </div>
@@ -1002,6 +890,24 @@ export const Itinerary = () => {
           conflictingActivity={scheduleConflictData?.conflictingActivity}
           onResolveMoveDownstream={handleResolveConflictMoveDownstream}
           onResolveAdjustTime={handleResolveConflictKeepTime}
+        />
+
+        {/* MODAL 7: NAVORA Weather Twin Dashboard & What-If Weather Simulator */}
+        <WeatherTwinDashboardModal
+          isOpen={isWeatherTwinOpen}
+          onClose={() => setIsWeatherTwinOpen(false)}
+          itinerary={itinerary}
+          tripPreferences={tripPreferences}
+          onApplyWeatherChanges={(analysis, rec, adaptedItinerary) => {
+            if (adaptedItinerary) {
+              setItinerary(adaptedItinerary)
+            }
+            setIsWeatherTwinOpen(false)
+            setConfirmationNotice({
+              title: "✓ Weather Twin Adaptation Applied",
+              message: `Simulated weather scenario (${analysis.scenario?.rainfall}mm rain) applied. Water Sports replaced with Fontainhas Heritage Walk. Downstream transit & dining schedule shifted.`
+            })
+          }}
         />
 
       </div>

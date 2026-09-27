@@ -3,11 +3,12 @@ import { motion, AnimatePresence } from 'framer-motion'
 import { 
   MapPin, Navigation, Compass, Sparkles, Clock, Car, 
   ArrowDown, ArrowRight, ArrowLeft, CheckCircle2, ExternalLink, 
-  Star, Route, Layers, Search, Filter, Phone, Share2, Info 
+  Star, Route, Layers, Search, Filter, Phone, Share2, Info, CloudRain 
 } from 'lucide-react'
 import { Badge } from '@/components/ui/Badge'
 import { calculateDistanceKm } from '@/services/itineraryEngine'
 import { formatCurrency } from '@/lib/utils'
+import { calculateEntityWeatherImpact } from '@/services/weatherTwinEngine'
 
 export const ItineraryMapView = ({
   dayItems = [],
@@ -31,6 +32,8 @@ export const ItineraryMapView = ({
   const [activeNavLeg, setActiveNavLeg] = useState(null)
   // Category filter
   const [categoryFilter, setCategoryFilter] = useState('all')
+  // Weather Risk Overlay state
+  const [showWeatherOverlay, setShowWeatherOverlay] = useState(true)
 
   // Sync if parent updates selectedItemId
   useEffect(() => {
@@ -254,6 +257,20 @@ export const ItineraryMapView = ({
               <span>Full Route</span>
             </button>
           </div>
+
+          {/* Weather Twin Risk Layer Toggle */}
+          <button
+            type="button"
+            onClick={() => setShowWeatherOverlay(!showWeatherOverlay)}
+            className={`inline-flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-bold border transition-all ${
+              showWeatherOverlay
+                ? 'bg-amber-50 border-amber-300 text-amber-950 shadow-soft-xs'
+                : 'bg-white border-sand-300 text-charcoal-700 hover:bg-sand-50'
+            }`}
+          >
+            <CloudRain className={`w-3.5 h-3.5 ${showWeatherOverlay ? 'text-cyan-600 animate-pulse' : 'text-charcoal-400'}`} />
+            <span>{showWeatherOverlay ? 'Weather Twin: ON' : 'Weather Twin: OFF'}</span>
+          </button>
 
           {/* External Google Maps Button */}
           <a
@@ -572,6 +589,23 @@ export const ItineraryMapView = ({
                       <MapPin className="w-3 h-3 text-terracotta-600 shrink-0" />
                       <span className="truncate">{stop.location || `${city}, Goa`}</span>
                     </p>
+
+                    {showWeatherOverlay && (() => {
+                      const impact = calculateEntityWeatherImpact(stop, { rainfall: 80, temperature: 27, windSpeed: 35 })
+                      return (
+                        <div className="mt-2 pt-1.5 border-t border-sand-100 flex items-center justify-between text-[10px]">
+                          <span className={`px-2 py-0.5 rounded font-mono font-bold ${
+                            impact.riskLevel === 'SEVERE' ? 'bg-rose-100 text-rose-900 border border-rose-300' :
+                            impact.riskLevel === 'HIGH' ? 'bg-amber-100 text-amber-900 border border-amber-300' :
+                            impact.riskLevel === 'MODERATE' ? 'bg-yellow-100 text-yellow-900 border border-yellow-300' :
+                            'bg-emerald-100 text-emerald-900 border border-emerald-300'
+                          }`}>
+                            {impact.riskLevel === 'SEVERE' ? '🔴' : impact.riskLevel === 'HIGH' ? '🟠' : impact.riskLevel === 'MODERATE' ? '🟡' : '🟢'} {impact.riskLevel} ({impact.disruptionProb}%)
+                          </span>
+                          <span className="text-sand-500 font-mono text-[9px]">{impact.sensitivities?.type || 'facility'}</span>
+                        </div>
+                      )
+                    })()}
 
                     {isSelected && (
                       <div className="mt-2 pt-2 border-t border-terracotta-200/80 flex items-center justify-between text-[10px] font-semibold text-terracotta-800">

@@ -1,6 +1,6 @@
 import React from 'react'
 import { useNavigate } from 'react-router-dom'
-import { ArrowLeft, Sparkles, HelpCircle, Calendar, Users, Sliders } from 'lucide-react'
+import { ArrowLeft, Sparkles, HelpCircle, Calendar, Users, CreditCard, CloudRain } from 'lucide-react'
 import { Button } from '@/components/ui/Button'
 
 export const ItineraryHeader = ({
@@ -9,7 +9,8 @@ export const ItineraryHeader = ({
   daysCount = 5,
   travelersCount = 2,
   onOpenWhatIf,
-  onOpenOptimize
+  onOpenOptimize,
+  onOpenWeatherTwin
 }) => {
   const navigate = useNavigate()
 
@@ -27,7 +28,7 @@ export const ItineraryHeader = ({
         </button>
 
         <h1 className="text-2xl sm:text-3xl lg:text-4xl font-serif font-bold text-charcoal-950 tracking-tight">
-          {city} Explorer
+          {city}
         </h1>
 
         <p className="text-xs sm:text-sm text-charcoal-600 flex items-center flex-wrap gap-2">
@@ -39,13 +40,23 @@ export const ItineraryHeader = ({
         </p>
       </div>
 
-      {/* Right Column: What If & Optimize Buttons */}
-      <div className="flex items-center gap-3">
+      {/* Right Column: Actions & Finalize Checkout */}
+      <div className="flex flex-wrap items-center gap-2.5">
+        <Button
+          variant="outline"
+          size="md"
+          onClick={onOpenWeatherTwin}
+          className="border-amber-300 bg-amber-50/80 text-amber-950 hover:bg-amber-100 shadow-soft-xs text-xs sm:text-sm font-bold h-10 px-3.5"
+          leftIcon={<CloudRain className="w-4 h-4 text-cyan-600 animate-pulse" />}
+        >
+          🌧️ Weather Twin
+        </Button>
+
         <Button
           variant="outline"
           size="md"
           onClick={onOpenWhatIf}
-          className="border-sand-300 bg-white text-charcoal-800 hover:bg-sand-50 hover:border-sand-400 shadow-soft-xs text-xs sm:text-sm font-semibold h-10 px-4"
+          className="border-sand-300 bg-white text-charcoal-800 hover:bg-sand-50 hover:border-sand-400 shadow-soft-xs text-xs sm:text-sm font-semibold h-10 px-3.5"
           leftIcon={<HelpCircle className="w-4 h-4 text-terracotta-600" />}
         >
           What If...?
@@ -54,10 +65,19 @@ export const ItineraryHeader = ({
         <Button
           size="md"
           onClick={onOpenOptimize}
-          className="bg-gradient-to-r from-terracotta-600 to-amber-600 hover:from-terracotta-700 hover:to-amber-700 text-white shadow-soft-sm text-xs sm:text-sm font-semibold h-10 px-4"
+          className="bg-gradient-to-r from-terracotta-600 to-amber-600 hover:from-terracotta-700 hover:to-amber-700 text-white shadow-soft-sm text-xs sm:text-sm font-semibold h-10 px-3.5"
           leftIcon={<Sparkles className="w-4 h-4 text-amber-200" />}
         >
-          ✨ Optimize My Day
+          ✨ Optimize Day
+        </Button>
+
+        <Button
+          size="md"
+          onClick={() => navigate('/checkout')}
+          className="bg-navy-900 hover:bg-navy-950 text-white shadow-warm-coral text-xs sm:text-sm font-bold h-10 px-4"
+          leftIcon={<CreditCard className="w-4 h-4 text-emerald-400" />}
+        >
+          Finalize & Pay via Stripe 💳
         </Button>
       </div>
     </div>

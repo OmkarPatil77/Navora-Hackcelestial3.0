@@ -20,6 +20,7 @@ import { OperatorAttentionQueue } from '@/components/operator/OperatorAttentionQ
 import { OperatorEventTimeline } from '@/components/operator/OperatorEventTimeline'
 import OperatorJourneyHealth from '@/components/operator/OperatorJourneyHealth'
 import { RecoveryPreviewModal } from '@/components/traveler/RecoveryPreviewModal'
+import { WeatherTwinDashboardModal } from '@/components/traveler/itinerary/WeatherTwinDashboardModal'
 import PageTransition from '@/components/motion/PageTransition'
 
 export const Operator = () => {
@@ -43,6 +44,7 @@ export const Operator = () => {
 
   const [previewPlan, setPreviewPlan] = useState(null)
   const [toastMessage, setToastMessage] = useState(null)
+  const [showWeatherTwinModal, setShowWeatherTwinModal] = useState(false)
 
   // Dynamic KPI numbers based on active state
   const openActionsCount = operatorAttentionItems?.filter(i => i.status === 'pending').length || 0
@@ -203,6 +205,78 @@ export const Operator = () => {
           </p>
         </Card>
       </div>
+
+      {/* ⚠️ WEATHER TWIN OPERATOR ALERT BANNER (Requirement 13) */}
+      <Card className="p-5 bg-gradient-to-r from-amber-950 via-slate-900 to-sky-950 text-white border border-amber-500/40 shadow-xl space-y-4 relative overflow-hidden">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-amber-500/30 pb-3">
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 rounded-xl bg-amber-500/20 border border-amber-400/40 flex items-center justify-center text-amber-300 font-bold text-xl animate-pulse">
+              🌧️
+            </div>
+            <div>
+              <div className="flex items-center gap-2">
+                <span className="px-2 py-0.5 rounded text-[10px] font-bold font-mono uppercase bg-amber-500/30 text-amber-200 border border-amber-400/40">
+                  WEATHER TWIN ALERT
+                </span>
+                <span className="text-xs text-amber-300/80">Trip: Goa Adventure — GOA-2048</span>
+              </div>
+              <h3 className="text-lg font-bold font-serif text-amber-100 flex items-center gap-2 mt-0.5">
+                Dynamic Weather Impact Monitoring Active
+                <span className="text-xs px-2 py-0.5 rounded bg-rose-500/30 text-rose-300 font-sans font-semibold border border-rose-400/30">
+                  Risk: HIGH
+                </span>
+              </h3>
+            </div>
+          </div>
+
+          <div className="flex items-center gap-2 flex-wrap sm:flex-nowrap">
+            <Button
+              size="sm"
+              variant="outline"
+              onClick={() => setShowWeatherTwinModal(true)}
+              className="border-amber-400/40 text-amber-200 hover:bg-amber-500/20 text-xs font-semibold"
+            >
+              🌧️ Simulate Impact
+            </Button>
+            <Button
+              size="sm"
+              onClick={() => setShowWeatherTwinModal(true)}
+              className="bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold text-xs"
+            >
+              📡 View Impact Radius & Replan
+            </Button>
+          </div>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs text-slate-200">
+          <div className="bg-slate-900/60 p-3 rounded-lg border border-slate-700/60 space-y-1">
+            <span className="text-amber-400 font-bold text-[11px] uppercase tracking-wider block">Direct & Indirect Affected Entities</span>
+            <ul className="space-y-1 text-slate-300">
+              <li className="flex items-center gap-2">🔴 <span className="font-semibold text-white">Baga Water Sports</span> — Disruption probability 87% (High Rain Sensitivity)</li>
+              <li className="flex items-center gap-2">🟠 <span className="font-semibold text-white">Transport Route 2</span> — Estimated delay 25–40 min</li>
+              <li className="flex items-center gap-2">🟡 <span className="font-semibold text-white">Beach Shack Restaurant</span> — Reservation timing shift requested</li>
+            </ul>
+          </div>
+
+          <div className="bg-slate-900/60 p-3 rounded-lg border border-slate-700/60 space-y-1">
+            <span className="text-amber-400 font-bold text-[11px] uppercase tracking-wider block">Estimated Cascade Impact Summary</span>
+            <div className="grid grid-cols-3 gap-2 text-center pt-1">
+              <div className="bg-rose-950/40 p-2 rounded border border-rose-800/40">
+                <span className="text-rose-400 text-base font-bold block">2</span>
+                <span className="text-[10px] text-rose-200">Activities Disrupted</span>
+              </div>
+              <div className="bg-amber-950/40 p-2 rounded border border-amber-800/40">
+                <span className="text-amber-400 text-base font-bold block">1</span>
+                <span className="text-[10px] text-amber-200">Transport Delay</span>
+              </div>
+              <div className="bg-sky-950/40 p-2 rounded border border-sky-800/40">
+                <span className="text-sky-400 text-base font-bold block">1</span>
+                <span className="text-[10px] text-sky-200">Timing Change</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </Card>
 
       {/* Real-time Journey Health Assessment for Active Fleet */}
       <OperatorJourneyHealth tourId="GOA-2048" />
@@ -452,6 +526,20 @@ export const Operator = () => {
           </table>
         </div>
       </Card>
+
+      {/* Weather Twin Modal */}
+      <WeatherTwinDashboardModal
+        isOpen={showWeatherTwinModal}
+        onClose={() => setShowWeatherTwinModal(false)}
+        itinerary={itinerary}
+        onApplyAdaptation={(analysis, rec, adaptedItinerary) => {
+          if (adaptedItinerary) {
+            setItinerary(adaptedItinerary)
+          }
+          setShowWeatherTwinModal(false)
+          showToast("Weather Twin Adaptation applied to active tour fleet (TRIP-1024)!")
+        }}
+      />
 
       {/* Preview Changes Modal */}
       <RecoveryPreviewModal

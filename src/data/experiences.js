@@ -35,6 +35,28 @@ export const allExperiences = [
     coordinates: { lat: 15.35, lng: 73.78 }
   },
   {
+    id: "goa-baga-watersports",
+    destination: "Goa",
+    destinationId: "goa",
+    title: "Baga Beach Water Sports & Jet Ski Safari",
+    category: "Adventure",
+    tags: ["adventure", "beaches", "water", "sports"],
+    description: "High-octane water adventures at Baga beach: Parasailing, Jet Ski rides, banana tube boating, and bumper rides with certified safety escorts.",
+    durationHours: 3.5,
+    pricePerPerson: 2200,
+    location: "Baga Beach, North Goa",
+    idealFor: ["adventure", "beaches", "water"],
+    pace: "active",
+    intensity: "high",
+    priorityFit: ["experiences"],
+    rating: 4.7,
+    reviewsCount: 428,
+    image: "https://images.unsplash.com/photo-1544551763-46a013bb70d5?auto=format&fit=crop&w=800&q=80",
+    bestTime: "Morning (09:00 – 12:30)",
+    highlights: ["Speedboat & Jet ski equipment", "Coast-guard approved life vests", "Parasailing over Baga coastline"],
+    coordinates: { lat: 15.555, lng: 73.751 }
+  },
+  {
     id: "goa-fontainhas-heritage-walk",
     destination: "Goa",
     destinationId: "goa",
