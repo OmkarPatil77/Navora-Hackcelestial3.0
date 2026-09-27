@@ -15,6 +15,11 @@ import { Trip } from '@/pages/Trip'
 import { Operator } from '@/pages/Operator'
 import { OperatorTours } from '@/pages/OperatorTours'
 import { OperatorTourDetail } from '@/pages/OperatorTourDetail'
+import { OperatorBookings } from '@/pages/OperatorBookings'
+import { OperatorVendors } from '@/pages/OperatorVendors'
+import { OperatorDisruptions } from '@/pages/OperatorDisruptions'
+import { OperatorPayments } from '@/pages/OperatorPayments'
+import { OperatorReports } from '@/pages/OperatorReports'
 
 function App() {
   return (
@@ -35,6 +40,11 @@ function App() {
             <Route index element={<Operator />} />
             <Route path="tours" element={<OperatorTours />} />
             <Route path="tours/:id" element={<OperatorTourDetail />} />
+            <Route path="bookings" element={<OperatorBookings />} />
+            <Route path="vendors" element={<OperatorVendors />} />
+            <Route path="disruptions" element={<OperatorDisruptions />} />
+            <Route path="payments" element={<OperatorPayments />} />
+            <Route path="reports" element={<OperatorReports />} />
           </Route>
 
           {/* Catch-all fallback */}

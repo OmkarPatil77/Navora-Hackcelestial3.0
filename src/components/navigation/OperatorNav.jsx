@@ -1,6 +1,6 @@
 import React from 'react'
 import { Link, useLocation, useNavigate } from 'react-router-dom'
-import { Activity, Layers, ArrowLeft, RefreshCw, AlertTriangle, ShieldCheck } from 'lucide-react'
+import { Activity, Layers, ArrowLeft, RefreshCw, AlertTriangle, ShieldCheck, CalendarCheck, Store, CreditCard, BarChart3 } from 'lucide-react'
 import { Logo } from '@/components/shared/Logo'
 import { Button } from '@/components/ui/Button'
 import { cn } from '@/lib/utils'
@@ -12,11 +12,21 @@ export const OperatorNav = () => {
   const navItems = [
     { label: "Command Center", href: "/operator", icon: Activity },
     { label: "All Active Tours", href: "/operator/tours", icon: Layers },
+    { label: "Bookings", href: "/operator/bookings", icon: CalendarCheck },
+    { label: "Vendors", href: "/operator/vendors", icon: Store },
+    { label: "Disruptions", href: "/operator/disruptions", icon: AlertTriangle },
+    { label: "Payments", href: "/operator/payments", icon: CreditCard },
+    { label: "Reports", href: "/operator/reports", icon: BarChart3 },
   ]
 
   const isActive = (path) => {
     if (path === '/operator' && location.pathname === '/operator') return true
     if (path === '/operator/tours' && location.pathname.startsWith('/operator/tours')) return true
+    if (path === '/operator/bookings' && location.pathname.startsWith('/operator/bookings')) return true
+    if (path === '/operator/vendors' && location.pathname.startsWith('/operator/vendors')) return true
+    if (path === '/operator/disruptions' && location.pathname.startsWith('/operator/disruptions')) return true
+    if (path === '/operator/payments' && location.pathname.startsWith('/operator/payments')) return true
+    if (path === '/operator/reports' && location.pathname.startsWith('/operator/reports')) return true
     return false
   }
 
@@ -59,14 +69,6 @@ export const OperatorNav = () => {
 
         {/* Right Actions */}
         <div className="flex items-center gap-3">
-          <div className="hidden sm:flex items-center gap-2 px-2.5 py-1 rounded-lg bg-charcoal-900 border border-charcoal-800 text-xs text-charcoal-300">
-            <span className="flex h-2 w-2 relative">
-              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
-              <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
-            </span>
-            <span>Live Stream: 18 Tours</span>
-          </div>
-
           <Button
             size="sm"
             variant="outline"

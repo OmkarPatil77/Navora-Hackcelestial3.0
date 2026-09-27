@@ -2,6 +2,7 @@ import React, { createContext, useContext, useState, useEffect } from 'react'
 import { defaultTripPreferences } from '@/data/mockData'
 import { generateItinerary, regenerateDay, calculateItinerarySummary, calculateFlexibilityScore } from '@/services/itineraryEngine'
 import { createSyntheticFlightDisruption, analyzeDisruption } from '@/services/disruptionEngine'
+import { generateRecoveryPlans, applyRecoveryPlanToItinerary } from '@/services/recoveryEngine'
 import { goaExperiences, getExperiencesByDestination, allExperiences } from '@/data/experiences'
 import { initialVendors, initialAttentionItems, initialOperatorTours } from '@/data/operatorData'
 import { calculateJourneyHealth } from '@/services/journeyHealthEngine'
@@ -789,7 +790,8 @@ export const TripPlanningProvider = ({ children }) => {
     explainProtectedNode,
     explainVendorImpact,
     calculateDuration,
-    calculateBudgetAllocation
+    calculateBudgetAllocation,
+    recoveryPlans
   }
 
   return (
