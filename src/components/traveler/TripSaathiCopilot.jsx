@@ -4,10 +4,10 @@ import { motion, AnimatePresence } from 'framer-motion'
 import { 
   Sparkles, Send, X, Bot, User, Check, 
   ArrowRight, ShieldCheck, RefreshCw, Plus, 
-  Wallet, Clock, MapPin, AlertCircle, MessageSquare 
+  Wallet, Clock, MapPin, AlertCircle, MessageSquare, Compass 
 } from 'lucide-react'
 import { useTripPlan } from '@/context/TripPlanningContext'
-import { isGeminiConfigured, buildCopilotContext, sendCopilotMessage } from '@/services/geminiService'
+import { isNugenConfigured, buildCopilotContext, sendCopilotMessage } from '@/services/nugenService'
 import { executeAiAction } from '@/services/aiActionExecutor'
 import { goaExperiences, allExperiences } from '@/data/experiences'
 import { Button } from '@/components/ui/Button'
@@ -51,7 +51,7 @@ export const TripSaathiCopilot = () => {
   ])
 
   const messagesEndRef = useRef(null)
-  const isAiActive = isGeminiConfigured()
+  const isAiActive = isNugenConfigured()
 
   const defaultQuickPrompts = [
     { label: "How is my trip health?", query: "How is my trip health?" },
